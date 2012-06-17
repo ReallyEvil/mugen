@@ -12,15 +12,32 @@ public class Mugen: MonoBehaviour
 	private const float SPEED_FACTOR = 0.01f;
 	private const float DECELERATION = 0.05f;
 
+	private const string CIRCLE_TEXT = "Textures/circle";
+
+	private const int CIRCLE_RADIUS = 100;
+
 	private Rect _rectGesture;
 	private Texture2D _gesture;
+
+	private Rect _rectCircle;
+	private Texture2D _circle;
 
 	private List<Vector2> _gesturePoints = new List<Vector2>();
 
 	private float _speed = 0f;
 
+	private Vector2 _screenPos;
+
 	private void Awake()
 	{
+		_screenPos = Camera.main.WorldToScreenPoint(transform.position);
+		_rectCircle.x = _screenPos.x - CIRCLE_RADIUS;
+		_rectCircle.y = Screen.height - _screenPos.y - CIRCLE_RADIUS;
+		_rectCircle.width = 2*CIRCLE_RADIUS;
+		_rectCircle.height = 2*CIRCLE_RADIUS;
+
+		_circle = Resources.Load(CIRCLE_TEXT) as Texture2D;
+
 		_rectGesture.width = Screen.width;
 		_rectGesture.height = Screen.height;
 
@@ -33,6 +50,7 @@ public class Mugen: MonoBehaviour
 	private void OnGUI()
 	{
 		GUI.DrawTexture(_rectGesture, _gesture);
+		GUI.DrawTexture(_rectCircle, _circle);
 	}
 
 	private void Update()
@@ -72,9 +90,10 @@ public class Mugen: MonoBehaviour
 	{
 		if (Input.GetMouseButton(GESTURE_MOUSE_BUTTON))
 		{
-			_gesturePoints.Add(Input.mousePosition);
+			onInput(Input.mousePosition);
 		}
-		else if (Input.GetMouseButtonUp(GESTURE_MOUSE_BUTTON))
+		else if (Input.GetMouseButtonUp(GESTURE_MOUSE_BUTTON) &&
+			_gesturePoints.Count > 0)
 		{
 			onGesture();
 		}
@@ -84,11 +103,21 @@ public class Mugen: MonoBehaviour
 	{
 		if (Input.touchCount > 0)
 		{
-			_gesturePoints.Add(Input.touches[0].position);
+			onInput(Input.touches[0].position);
 		}
 		else if (Input.touchCount == 0 && _gesturePoints.Count > 0)
 		{
 			onGesture();
+		}
+	}
+
+	private void onInput(Vector2 pos)
+	{
+		// First point needs to be withing the movement circle
+		if (_gesturePoints.Count > 0 ||
+			Vector2.Distance(_screenPos, pos) < CIRCLE_RADIUS)
+		{
+			_gesturePoints.Add(pos);
 		}
 	}
 
