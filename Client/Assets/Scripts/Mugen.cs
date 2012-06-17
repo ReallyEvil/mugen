@@ -5,7 +5,8 @@ using UnityEngine;
 public class Mugen: MonoBehaviour
 {
 	private Color GESTURE_COLOR = Color.gray;
-	private const string GESTURE_MOUSE_KEY = "Fire1";
+	private const int GESTURE_MOUSE_BUTTON = 0;
+	private const int GESTURE_WIDTH = 5;
 
 	private const int WIDTH = 70;
 	private const int HEIGHT = 70;
@@ -39,7 +40,6 @@ public class Mugen: MonoBehaviour
 		GUI.DrawTexture(_rectGesture, _gesture);
 	}
 
-
 	private void Update()
 	{
 		if (Application.platform == RuntimePlatform.WindowsEditor)
@@ -54,11 +54,11 @@ public class Mugen: MonoBehaviour
 
 	private void mouseInput()
 	{
-		if (Input.GetButton(GESTURE_MOUSE_KEY))
+		if (Input.GetMouseButton(GESTURE_MOUSE_BUTTON))
 		{
 			_gesturePoints.Add(Input.mousePosition);
 		}
-		else if (Input.GetButtonUp(GESTURE_MOUSE_KEY))
+		else if (Input.GetMouseButtonUp(GESTURE_MOUSE_BUTTON))
 		{
 			drawGestures();
 		}
@@ -97,6 +97,15 @@ public class Mugen: MonoBehaviour
 		foreach (Vector2 point in points)
 		{
 			_gesture.SetPixel((int)point.x, (int)point.y, GESTURE_COLOR);
+
+			for (int x = 1; x < GESTURE_WIDTH; ++x)
+			{
+				for (int y = 1; y < GESTURE_WIDTH; ++y)
+				{
+					_gesture.SetPixel((int)(point.x+x), (int)point.y-y, GESTURE_COLOR);
+					_gesture.SetPixel((int)(point.x-x), (int)point.y-y, GESTURE_COLOR);
+				}
+			}
 		}
 
 		_gesture.Apply();
