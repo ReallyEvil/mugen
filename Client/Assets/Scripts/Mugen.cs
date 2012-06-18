@@ -4,20 +4,24 @@ using UnityEngine;
 
 public class Mugen: MonoBehaviour
 {
-	private Color GESTURE_COLOR = Color.gray;
+	private enum Movement
+	{
+		Idle,
+		Run,
+		Decelerate
+	}
+
 	private const int GESTURE_MOUSE_BUTTON = 0;
-	private const int GESTURE_WIDTH = 5;
 
 	private const float SPEED_MIN = 0.1f;
-	private const float SPEED_FACTOR = 0.01f;
-	private const float DECELERATION = 0.05f;
+	private const float SPEED_FACTOR = 0.003f;
+	private const float DECELERATION = 0.01f;
 
 	private const string CIRCLE_TEXT = "Textures/circle";
 
+	private const float CIRCLE_ALPHA_MIN = 0.4f;
+	private const float CIRCLE_ALPHA_MAX = 0.8f;
 	private const int CIRCLE_RADIUS = 100;
-
-	private Rect _rectGesture;
-	private Texture2D _gesture;
 
 	private Rect _rectCircle;
 	private Texture2D _circle;
@@ -28,8 +32,12 @@ public class Mugen: MonoBehaviour
 
 	private Vector2 _screenPos;
 
+	private Movement _movement = Movement.Idle;
+
 	private void Awake()
 	{
+		useGUILayout = false;
+
 		_screenPos = Camera.main.WorldToScreenPoint(transform.position);
 		_rectCircle.x = _screenPos.x - CIRCLE_RADIUS;
 		_rectCircle.y = Screen.height - _screenPos.y - CIRCLE_RADIUS;
@@ -37,77 +45,101 @@ public class Mugen: MonoBehaviour
 		_rectCircle.height = 2*CIRCLE_RADIUS;
 
 		_circle = Resources.Load(CIRCLE_TEXT) as Texture2D;
-
-		_rectGesture.width = Screen.width;
-		_rectGesture.height = Screen.height;
-
-		_gesture = new Texture2D(
-			Screen.width, Screen.height, TextureFormat.ARGB32, false);
-
-		clearGesture();
 	}
 
 	private void OnGUI()
 	{
-		GUI.DrawTexture(_rectGesture, _gesture);
+		float lerp = Mathf.Abs(_speed / (Screen.width/2 * SPEED_FACTOR));
+		lerp = Mathf.Clamp(lerp, CIRCLE_ALPHA_MIN, CIRCLE_ALPHA_MAX);
+		GUI.color = Color.Lerp(Color.clear, Color.white, lerp);
+		
 		GUI.DrawTexture(_rectCircle, _circle);
-	}
-
-	private void Update()
-	{
-		if (Application.platform == RuntimePlatform.WindowsEditor)
-		{
-			mouseInput();
-		}
-		else
-		{
-			touchInput();
-		}
 	}
 
 	private void FixedUpdate()
 	{
-		if (_speed == 0f)
-		{
-			return;
-		}
+		input();
 
-		if (Mathf.Abs(_speed) < SPEED_MIN)
+		switch (_movement)
 		{
-			_speed = 0f;
-			clearGesture();
-			return;
+			case Movement.Idle:
+				idle();
+				break;
+			case Movement.Run:
+				run();
+				break;
+			case Movement.Decelerate:
+				decelerate();
+				break;
 		}
+	}
 
-		_speed += _speed > 0f ? -DECELERATION : DECELERATION;
+	private void idle()
+	{
+		// TODO: Animate
+	}
+
+	private void run()
+	{
+		// TODO: Animate
+
+		Vector3 dir =
+			_gesturePoints[_gesturePoints.Count-1] - _gesturePoints[0];
+
+		// Just the x axis for now
+		dir.y = 0;
+		dir.z = 0;
+
+		_speed = dir.x * SPEED_FACTOR;
 
 		Vector3 pos = transform.position;
 		pos.x += _speed;
 		transform.position = pos;
 	}
 
-	private void mouseInput()
+	private void decelerate()
 	{
-		if (Input.GetMouseButton(GESTURE_MOUSE_BUTTON))
+		// TODO: Animate
+
+		// Translate
+		Vector3 pos = transform.position;
+		pos.x += _speed;
+		transform.position = pos;
+
+		// Decelerate
+		_speed += _speed > 0f ? -DECELERATION : DECELERATION;
+
+		if (Mathf.Abs(_speed) < SPEED_MIN)
 		{
-			onInput(Input.mousePosition);
-		}
-		else if (Input.GetMouseButtonUp(GESTURE_MOUSE_BUTTON) &&
-			_gesturePoints.Count > 0)
-		{
-			onGesture();
+			_movement = Movement.Idle;
 		}
 	}
 
-	private void touchInput()
+	private void input()
 	{
-		if (Input.touchCount > 0)
+		if (Application.platform == RuntimePlatform.Android ||
+			Application.platform == RuntimePlatform.IPhonePlayer)
 		{
-			onInput(Input.touches[0].position);
+			if (Input.touchCount > 0)
+			{
+				onInput(Input.touches[0].position);
+			}
+			else if (Input.touchCount == 0 && _gesturePoints.Count > 0)
+			{
+				onGesture();
+			}
 		}
-		else if (Input.touchCount == 0 && _gesturePoints.Count > 0)
+		else if (Application.platform == RuntimePlatform.WindowsEditor)
 		{
-			onGesture();
+			if (Input.GetMouseButton(GESTURE_MOUSE_BUTTON))
+			{
+				onInput(Input.mousePosition);
+			}
+			else if (Input.GetMouseButtonUp(GESTURE_MOUSE_BUTTON) &&
+				_gesturePoints.Count > 0)
+			{
+				onGesture();
+			}
 		}
 	}
 
@@ -117,73 +149,16 @@ public class Mugen: MonoBehaviour
 		if (_gesturePoints.Count > 0 ||
 			Vector2.Distance(_screenPos, pos) < CIRCLE_RADIUS)
 		{
+			_movement = Movement.Run;
+
 			_gesturePoints.Add(pos);
 		}
 	}
 
 	private void onGesture()
 	{
-		processGesture();
-		drawGesture();
+		_movement = Movement.Decelerate;
+
 		_gesturePoints.Clear();
-	}
-
-	private void processGesture()
-	{
-		Vector3 dir =
-			_gesturePoints[_gesturePoints.Count-1] - _gesturePoints[0];
-
-		// Just the x axis for now
-		dir.y = 0;
-		dir.z = 0;
-
-		_speed = dir.x * SPEED_FACTOR;
-	}
-
-	private void drawGesture()
-	{
-		List<Vector2> points = new List<Vector2>();
-
-		for (int i = 0; i < _gesturePoints.Count-1; ++i)
-		{
-			Vector2 start = _gesturePoints[i];
-			Vector2 end = _gesturePoints[i+1];
-
-			Vector2 dir = (end - start).normalized;
-
-			while (Vector2.Distance(start, end) > 3f)
-			{
-				points.Add(start);
-				start += dir;
-			}
-		}
-
-		foreach (Vector2 point in points)
-		{
-			_gesture.SetPixel((int)point.x, (int)point.y, GESTURE_COLOR);
-
-			for (int x = 1; x < GESTURE_WIDTH; ++x)
-			{
-				for (int y = 1; y < GESTURE_WIDTH; ++y)
-				{
-					_gesture.SetPixel((int)(point.x+x), (int)point.y-y, GESTURE_COLOR);
-					_gesture.SetPixel((int)(point.x-x), (int)point.y-y, GESTURE_COLOR);
-				}
-			}
-		}
-
-		_gesture.Apply();
-	}
-
-	private void clearGesture()
-	{
-		for (int x = 0; x < _gesture.width; ++x)
-		{
-			for (int y = 0; y < _gesture.height; ++y)
-			{
-				_gesture.SetPixel(x, y, Color.clear);
-			}
-		}
-		_gesture.Apply();
 	}
 }
