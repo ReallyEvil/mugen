@@ -1,0 +1,1 @@
+Each frame's pixel dimension is 250*250 pixels starting at the top left hand corner. The reason why there are a lot of blank space in each frame is to make some space for when the swordie swings his sword around. Subject to change when we figure out how to separate parts of the sprite and then composite them in real time.
