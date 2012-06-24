@@ -1,0 +1,6 @@
+-----------------------
+2D Engine Features
+-----------------------
+- Atlas generation
+- UI to control animation timeline
+- One button 'sprite-to-prefab'
