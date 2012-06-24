@@ -7,7 +7,6 @@ public class Swordsman: MonoBehaviour
 {
 	private enum Movement
 	{
-		Idle,
 		Run,
 		Decelerate
 	}
@@ -15,15 +14,16 @@ public class Swordsman: MonoBehaviour
 	#region Editor Configurables
 	public float _attackSpeed = 0.1f;
 
-	public float _moveSpeed = 0.003f;
-	public float _deceleration = 0.01f;
+	public float _xVelocityFactor = 0.01f;
+	public float _xDeceleration = 0.1f;
+	public float _yAcceleration = 0.1f;
+	public float _yDeceleration = -0.1f;
 
-	public float _jumpAngleFactor = 20f;
 	public float _jumpAngleMin = 0.25f;
+	public float _jumpAngleFactor = 0.3f;
 	public float _jumpHeightMax = 10;
-	public float _gravity = -0.3f;
 
-	public const int CIRCLE_RADIUS = 100;
+	public int _moveGestureRadius = 100;
 
 	#endregion Editor Configurables
 
@@ -36,10 +36,7 @@ public class Swordsman: MonoBehaviour
 
 	private const string CIRCLE_TEXT = "Textures/circle";
 
-	private const float CIRCLE_ALPHA_MIN = 0.4f;
-	private const float CIRCLE_ALPHA_MAX = 0.8f;
-
-	private const float SPEED_MIN = 0.1f;
+	private const float MIN_VELOCITY = 0.1f;
 
 	private static Swordsman s_player;
 	public static Swordsman player { get { return s_player; } }
@@ -50,14 +47,11 @@ public class Swordsman: MonoBehaviour
 	private List<Vector2> _moveGesture = new List<Vector2>();
 	private List<Vector2> _actionGesture = new List<Vector2>();
 
-	private float _speed = 0f;
-
-	private float _jumpPower = 0f;
+	private Vector3 _velocity = Vector3.zero;
 
 	private Vector2 _screenPos;
 
-	private Movement _movement = Movement.Idle;
-
+	private float _jumpTime = Single.MinValue;
 	private float _swordTime = Single.MaxValue;
 
 	private GameObject _leftSword;
@@ -70,10 +64,10 @@ public class Swordsman: MonoBehaviour
 		useGUILayout = false;
 
 		_screenPos = Camera.main.WorldToScreenPoint(transform.position);
-		_rectCircle.x = _screenPos.x - CIRCLE_RADIUS;
-		_rectCircle.y = Screen.height - _screenPos.y - CIRCLE_RADIUS;
-		_rectCircle.width = 2*CIRCLE_RADIUS;
-		_rectCircle.height = 2*CIRCLE_RADIUS;
+		_rectCircle.x = _screenPos.x - _moveGestureRadius;
+		_rectCircle.y = Screen.height - _screenPos.y - _moveGestureRadius;
+		_rectCircle.width = 2*_moveGestureRadius;
+		_rectCircle.height = 2*_moveGestureRadius;
 
 		_circle = Resources.Load(CIRCLE_TEXT) as Texture2D;
 
@@ -86,10 +80,6 @@ public class Swordsman: MonoBehaviour
 
 	private void OnGUI()
 	{
-		float lerp = Mathf.Abs(_speed / (Screen.width/2 * _moveSpeed));
-		lerp = Mathf.Clamp(lerp, CIRCLE_ALPHA_MIN, CIRCLE_ALPHA_MAX);
-		GUI.color = Color.Lerp(Color.clear, Color.white, lerp);
-		
 		GUI.DrawTexture(_rectCircle, _circle);
 	}
 
@@ -104,82 +94,44 @@ public class Swordsman: MonoBehaviour
 			_rightSword.active = false;
 		}
 
-		// Y translation
 		Vector3 pos = transform.position;
-		if (_jumpPower > 0)
+
+		// Movement along the X axis
+		if (_moveGesture.Count > 1)
 		{
-			pos.y -= _gravity;
-			_jumpPower += _gravity;
-			_jumpPower = Mathf.Max(0f, _jumpPower);
+			Vector3 dir =
+				_moveGesture[_moveGesture.Count-1] - _moveGesture[0];
+			_velocity.x = dir.x * _xVelocityFactor;
+		}
+		else if (Mathf.Abs(_velocity.x) > MIN_VELOCITY)
+		{
+			_velocity.x += _velocity.x > 0f ? -_xDeceleration : _xDeceleration;
+		}
+		else
+		{
+			_velocity.x = 0f;
+		}
+
+		// Movement along the Y axis
+		if (_jumpTime > Time.time)
+		{
+			_velocity.y += _yAcceleration;
 		}
 		else if (pos.y > 0f)
 		{
-			pos.y += _gravity;
-			pos.y = Mathf.Max(0f, pos.y);
-			pos.y = Mathf.Clamp(pos.y, 0f, _jumpHeightMax);
+			_velocity.y += _yDeceleration;
+		}
+
+		pos += _velocity;
+		
+		// Don't go below the ground
+		if (transform.position.y < 0f)
+		{
+			pos.y = 0f;
+			_velocity.y = 0f;
 		}
 
 		transform.position = pos;
-
-		// X translation
-		switch (_movement)
-		{
-			case Movement.Idle:
-				idle();
-				break;
-			case Movement.Run:
-				run();
-				break;
-			case Movement.Decelerate:
-				decelerate();
-				break;
-		}
-	}
-
-	private void idle()
-	{
-		// TODO: Animate
-	}
-
-	private void run()
-	{
-		// TODO: Animate
-
-		Vector3 dir =
-			_moveGesture[_moveGesture.Count-1] - _moveGesture[0];
-
-		// Just the x axis for now
-		dir.y = 0;
-		dir.z = 0;
-
-		_speed = dir.x * _moveSpeed;
-
-		Vector3 pos = transform.position;
-		pos.x += _speed;
-		transform.position = pos;
-	}
-
-	private void decelerate()
-	{
-		// TODO: Animate
-	
-		Vector3 pos = transform.position;
-
-		// Translate
-		pos.x += _speed;
-		transform.position = pos;
-
-		// Decelerate
-		// No air friction
-		if (pos.y == 0f)
-		{
-			_speed += _speed > 0f ? -_deceleration : _deceleration;
-		}
-
-		if (Mathf.Abs(_speed) < SPEED_MIN)
-		{
-			_movement = Movement.Idle;
-		}
 	}
 
 	private void input()
@@ -226,7 +178,7 @@ public class Swordsman: MonoBehaviour
 		// Gestures started in the circle are  movements, outside are actions
 		if (_moveGesture.Count == 0 || _actionGesture.Count == 0)
 		{
-			isMove = Vector2.Distance(_screenPos, pos) < CIRCLE_RADIUS;
+			isMove = Vector2.Distance(_screenPos, pos) < _moveGestureRadius;
 		}
 		else
 		{
@@ -235,7 +187,6 @@ public class Swordsman: MonoBehaviour
 
 		if (isMove)
 		{
-			_movement = Movement.Run;
 			_moveGesture.Add(pos);
 		}
 		else
@@ -252,10 +203,8 @@ public class Swordsman: MonoBehaviour
 
 		if (dot > _jumpAngleMin)
 		{
-			_jumpPower = _jumpAngleFactor * dot;
+			_jumpTime = Time.time + _jumpAngleFactor*dot;
 		}
-
-		_movement = Movement.Decelerate;
 
 		_moveGesture.Clear();
 	}
