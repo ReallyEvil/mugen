@@ -12,12 +12,18 @@ public class Grunt: MonoBehaviour
 	{
 		Vector3 dir = Swordsman.player.gameObject.transform.position - 
 			gameObject.transform.position;
+		dir.y = 0f;
+		dir.z = 0f;
 
 		if (Mathf.Abs(dir.x) > MIN_DIST)
 		{
 			gameObject.transform.position += SPEED*dir.normalized;
 		}
-		else
+	}
+
+	private void OnCollisionEnter(Collision collision)
+	{
+		if (collision.gameObject.tag.Equals(Swordsman.SWORD_TAG))
 		{
 			Destroy(gameObject);
 		}
