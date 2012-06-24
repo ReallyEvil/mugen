@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 using UnityEngine;
@@ -17,6 +18,11 @@ public class Mugen: MonoBehaviour
 	private const float SPEED_FACTOR = 0.003f;
 	private const float DECELERATION = 0.01f;
 
+	private const float JUMP_FACTOR_ANGLE = 20f;
+	private const float JUMP_FACTOR_SPEED = 20f;
+	private const float JUMP_DOT_MIN = 0.25f;
+	private const float GRAVITY = -0.3f;
+
 	private const string CIRCLE_TEXT = "Textures/circle";
 
 	private const float CIRCLE_ALPHA_MIN = 0.4f;
@@ -29,6 +35,8 @@ public class Mugen: MonoBehaviour
 	private List<Vector2> _gesturePoints = new List<Vector2>();
 
 	private float _speed = 0f;
+
+	private float _jumpPower = 0f;
 
 	private Vector2 _screenPos;
 
@@ -60,6 +68,23 @@ public class Mugen: MonoBehaviour
 	{
 		input();
 
+		// Y translation
+		Vector3 pos = transform.position;
+		if (_jumpPower > 0)
+		{
+			pos.y -= GRAVITY;
+			_jumpPower += GRAVITY;
+			_jumpPower = Mathf.Max(0f, _jumpPower);
+		}
+		else if (pos.y > 0f)
+		{
+			pos.y += GRAVITY;
+			pos.y = Mathf.Max(0f, pos.y);
+		}
+
+		transform.position = pos;
+
+		// X translation
 		switch (_movement)
 		{
 			case Movement.Idle:
@@ -100,14 +125,19 @@ public class Mugen: MonoBehaviour
 	private void decelerate()
 	{
 		// TODO: Animate
+	
+		Vector3 pos = transform.position;
 
 		// Translate
-		Vector3 pos = transform.position;
 		pos.x += _speed;
 		transform.position = pos;
 
 		// Decelerate
-		_speed += _speed > 0f ? -DECELERATION : DECELERATION;
+		// No air friction
+		if (pos.y == 0f)
+		{
+			_speed += _speed > 0f ? -DECELERATION : DECELERATION;
+		}
 
 		if (Mathf.Abs(_speed) < SPEED_MIN)
 		{
@@ -157,6 +187,15 @@ public class Mugen: MonoBehaviour
 
 	private void onGesture()
 	{
+		Vector3 dir =
+			_gesturePoints[_gesturePoints.Count-1] - _gesturePoints[0];
+		float dot = Vector3.Dot(dir.normalized, Vector2.up);
+
+		if (dot > JUMP_DOT_MIN)
+		{
+			_jumpPower = JUMP_FACTOR_ANGLE * dot;// + JUMP_FACTOR_SPEED *dir.;
+		}
+
 		_movement = Movement.Decelerate;
 
 		_gesturePoints.Clear();
