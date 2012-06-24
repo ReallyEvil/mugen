@@ -12,28 +12,34 @@ public class Swordsman: MonoBehaviour
 		Decelerate
 	}
 
+	#region Editor Configurables
+	public float _attackSpeed = 0.1f;
+
+	public float _moveSpeed = 0.003f;
+	public float _deceleration = 0.01f;
+
+	public float _jumpAngleFactor = 20f;
+	public float _jumpAngleMin = 0.25f;
+	public float _jumpHeightMax = 10;
+	public float _gravity = -0.3f;
+
+	public const int CIRCLE_RADIUS = 100;
+
+	#endregion Editor Configurables
+
 	public const string SWORD_TAG = "Sword";
 
 	private const int GESTURE_MOUSE_BUTTON = 0;
 
 	private const string LEFT_SWORD = "/Swordsman/LeftSword";
 	private const string RIGHT_SWORD = "/Swordsman/RightSword";
-	private const float TIME_SWORD = 0.1f;
-
-	private const float SPEED_MIN = 0.1f;
-	private const float SPEED_FACTOR = 0.003f;
-	private const float DECELERATION = 0.01f;
-
-	private const float JUMP_FACTOR_ANGLE = 20f;
-	private const float JUMP_DOT_MIN = 0.25f;
-	private const float JUMP_MAX = 10;
-	private const float GRAVITY = -0.3f;
 
 	private const string CIRCLE_TEXT = "Textures/circle";
 
 	private const float CIRCLE_ALPHA_MIN = 0.4f;
 	private const float CIRCLE_ALPHA_MAX = 0.8f;
-	private const int CIRCLE_RADIUS = 100;
+
+	private const float SPEED_MIN = 0.1f;
 
 	private static Swordsman s_player;
 	public static Swordsman player { get { return s_player; } }
@@ -80,7 +86,7 @@ public class Swordsman: MonoBehaviour
 
 	private void OnGUI()
 	{
-		float lerp = Mathf.Abs(_speed / (Screen.width/2 * SPEED_FACTOR));
+		float lerp = Mathf.Abs(_speed / (Screen.width/2 * _moveSpeed));
 		lerp = Mathf.Clamp(lerp, CIRCLE_ALPHA_MIN, CIRCLE_ALPHA_MAX);
 		GUI.color = Color.Lerp(Color.clear, Color.white, lerp);
 		
@@ -102,15 +108,15 @@ public class Swordsman: MonoBehaviour
 		Vector3 pos = transform.position;
 		if (_jumpPower > 0)
 		{
-			pos.y -= GRAVITY;
-			_jumpPower += GRAVITY;
+			pos.y -= _gravity;
+			_jumpPower += _gravity;
 			_jumpPower = Mathf.Max(0f, _jumpPower);
 		}
 		else if (pos.y > 0f)
 		{
-			pos.y += GRAVITY;
+			pos.y += _gravity;
 			pos.y = Mathf.Max(0f, pos.y);
-			pos.y = Mathf.Clamp(pos.y, 0f, JUMP_MAX);
+			pos.y = Mathf.Clamp(pos.y, 0f, _jumpHeightMax);
 		}
 
 		transform.position = pos;
@@ -146,7 +152,7 @@ public class Swordsman: MonoBehaviour
 		dir.y = 0;
 		dir.z = 0;
 
-		_speed = dir.x * SPEED_FACTOR;
+		_speed = dir.x * _moveSpeed;
 
 		Vector3 pos = transform.position;
 		pos.x += _speed;
@@ -167,7 +173,7 @@ public class Swordsman: MonoBehaviour
 		// No air friction
 		if (pos.y == 0f)
 		{
-			_speed += _speed > 0f ? -DECELERATION : DECELERATION;
+			_speed += _speed > 0f ? -_deceleration : _deceleration;
 		}
 
 		if (Mathf.Abs(_speed) < SPEED_MIN)
@@ -244,9 +250,9 @@ public class Swordsman: MonoBehaviour
 			_moveGesture[_moveGesture.Count-1] - _moveGesture[0];
 		float dot = Vector3.Dot(dir.normalized, Vector2.up);
 
-		if (dot > JUMP_DOT_MIN)
+		if (dot > _jumpAngleMin)
 		{
-			_jumpPower = JUMP_FACTOR_ANGLE * dot;
+			_jumpPower = _jumpAngleFactor * dot;
 		}
 
 		_movement = Movement.Decelerate;
@@ -269,7 +275,7 @@ public class Swordsman: MonoBehaviour
 			_rightSword.active = false;
 		}
 
-		_swordTime = Time.time + TIME_SWORD;
+		_swordTime = Time.time + _attackSpeed;
 
 		_actionGesture.Clear();
 	}
