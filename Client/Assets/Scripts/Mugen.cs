@@ -6,10 +6,6 @@ public class Mugen: MonoBehaviour
 	private const int SPAWN_DIST_MIN = 20;
 	private const int SPAWN_DIST_MAX = 25;
 
-    private const string SPRITE_PREFAB = "Prefabs/Sprite";
-
-    private Rect _rectMesh = new Rect(100, 100, 100, 100);
-
 	private Object _gruntPrefab;
 
 	private void Awake()
@@ -36,13 +32,4 @@ public class Mugen: MonoBehaviour
 			grunt.transform.position = new Vector3(spawnPos.x + dist, 0f, 0f);
 		}
 	}
-
-    public void OnGUI()
-    {
-        if (GUI.Button(_rectMesh, "Sprite"))
-        {
-            Object prefab = Resources.Load(SPRITE_PREFAB);
-            GameObject go = GameObject.Instantiate(prefab) as GameObject;
-        }
-    }
 }
