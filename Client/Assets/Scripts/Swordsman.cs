@@ -80,7 +80,7 @@ public class Swordsman: MonoBehaviour
 
 	private void OnGUI()
 	{
-		GUI.Box(_rectCircle, "");
+		GUI.DrawTexture(_rectCircle, _circle);
 	}
 
 	private void FixedUpdate()
