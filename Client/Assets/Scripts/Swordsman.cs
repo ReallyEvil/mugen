@@ -80,7 +80,7 @@ public class Swordsman: MonoBehaviour
 
 	private void OnGUI()
 	{
-		GUI.Box(_rectCircle, "");
+		GUI.DrawTexture(_rectCircle, _circle);
 	}
 
 	private void FixedUpdate()
@@ -99,9 +99,19 @@ public class Swordsman: MonoBehaviour
 		// Movement along the X axis
 		if (_moveGesture.Count > 1)
 		{
-			Vector3 dir =
-				_moveGesture[_moveGesture.Count-1] - _moveGesture[0];
-			_velocity.x = dir.x * _xVelocityFactor;
+			float xVelocity =
+				(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
+				_xVelocityFactor;
+
+			// Ignore slower movements in the same direction
+			if (xVelocity != 0f &&
+				(_velocity.x == 0f ||
+				Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity) ||
+				(_velocity.x > 0f && _velocity.x < xVelocity) ||
+				(_velocity.x < 0f && _velocity.x > xVelocity)))
+			{
+				_velocity.x = xVelocity;
+			}
 		}
 		else if (Mathf.Abs(_velocity.x) > MIN_VELOCITY)
 		{
