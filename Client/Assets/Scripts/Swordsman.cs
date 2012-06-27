@@ -18,12 +18,11 @@ public class Swordsman: MonoBehaviour
 	public float _xVelocityMax = 2f;
 	public float _xDecelerate = 0.075f;
 	public float _xDecelerateChangeDir = 0.2f;
-	public float _yAccelerate = 0.1f;
-	public float _yDecelerate = -0.1f;
+	public float _gravity = -0.075f;
 
 	public float _jumpAngleMin = 0.25f;
-	public float _jumpAngleFactor = 0.3f;
-	public float _jumpHeightMax = 10;
+	public float _jumpAngleFactor = 2f;
+	public int _jumpConsecutive = 2;
 
 	public int _moveGestureRadius = 100;
 
@@ -51,9 +50,10 @@ public class Swordsman: MonoBehaviour
 
 	private Vector3 _velocity = Vector3.zero;
 
+	private int _jumps;
+
 	private Vector2 _screenPos;
 
-	private float _jumpTime = Single.MinValue;
 	private float _swordTime = Single.MaxValue;
 
 	private GameObject _leftSword;
@@ -62,6 +62,8 @@ public class Swordsman: MonoBehaviour
 	private void Awake()
 	{
 		s_player = this;
+
+		_jumps = _jumpConsecutive;
 
 		useGUILayout = false;
 
@@ -136,13 +138,9 @@ public class Swordsman: MonoBehaviour
 		_velocity.x = Mathf.Clamp(_velocity.x, -_xVelocityMax, _xVelocityMax);
 
 		// Movement along the Y axis
-		if (_jumpTime > Time.time)
+		if (pos.y > 0f)
 		{
-			_velocity.y += _yAccelerate;
-		}
-		else if (pos.y > 0f)
-		{
-			_velocity.y += _yDecelerate;
+			_velocity.y += _gravity;
 		}
 
 		pos += _velocity;
@@ -152,6 +150,7 @@ public class Swordsman: MonoBehaviour
 		{
 			pos.y = 0f;
 			_velocity.y = 0f;
+			_jumps = _jumpConsecutive;
 		}
 
 		transform.position = pos;
@@ -224,9 +223,10 @@ public class Swordsman: MonoBehaviour
 			_moveGesture[_moveGesture.Count-1] - _moveGesture[0];
 		float dot = Vector3.Dot(dir.normalized, Vector2.up);
 
-		if (dot > _jumpAngleMin)
+		if (_jumps > 0 && dot > _jumpAngleMin)
 		{
-			_jumpTime = Time.time + _jumpAngleFactor*dot;
+			_velocity.y = _jumpAngleFactor*dot;
+			--_jumps;
 		}
 
 		_moveGesture.Clear();
