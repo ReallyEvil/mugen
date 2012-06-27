@@ -75,3 +75,12 @@
 /Client/Library/ScriptMapper
 /Client/Library/cache
 /Client/Library/AssetVersioning.db
+/Client/Library/AudioManager.asset
+/Client/Library/DynamicsManager.asset
+/Client/Library/EditorBuildSettings.asset
+/Client/Library/EditorSettings.asset
+/Client/Library/InputManager.asset
+/Client/Library/NetworkManager.asset
+/Client/Library/QualitySettings.asset
+/Client/Library/TagManager.asset
+/Client/Library/TimeManager.asset
