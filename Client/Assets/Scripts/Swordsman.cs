@@ -15,9 +15,11 @@ public class Swordsman: MonoBehaviour
 	public float _attackSpeed = 0.1f;
 
 	public float _xVelocityFactor = 0.01f;
-	public float _xDeceleration = 0.1f;
-	public float _yAcceleration = 0.1f;
-	public float _yDeceleration = -0.1f;
+	public float _xVelocityMax = 2f;
+	public float _xDecelerate = 0.075f;
+	public float _xDecelerateChangeDir = 0.2f;
+	public float _yAccelerate = 0.1f;
+	public float _yDecelerate = -0.1f;
 
 	public float _jumpAngleMin = 0.25f;
 	public float _jumpAngleFactor = 0.3f;
@@ -36,7 +38,7 @@ public class Swordsman: MonoBehaviour
 
 	private const string CIRCLE_TEXT = "Textures/circle";
 
-	private const float MIN_VELOCITY = 0.1f;
+	private const float MIN_VELOCITY = 0.01f;
 
 	private static Swordsman s_player;
 	public static Swordsman player { get { return s_player; } }
@@ -96,40 +98,51 @@ public class Swordsman: MonoBehaviour
 
 		Vector3 pos = transform.position;
 
-		// Movement along the X axis
+		// Process x axis movement
 		if (_moveGesture.Count > 1)
 		{
 			float xVelocity =
 				(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
 				_xVelocityFactor;
 
-			// Ignore slower movements in the same direction
-			if (xVelocity != 0f &&
-				(_velocity.x == 0f ||
-				Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity) ||
-				(_velocity.x > 0f && _velocity.x < xVelocity) ||
+			// Faster
+			if (_velocity.x == 0f ||
+				((_velocity.x > 0f && _velocity.x < xVelocity) ||
 				(_velocity.x < 0f && _velocity.x > xVelocity)))
 			{
 				_velocity.x = xVelocity;
 			}
+			// Change dir
+			else if (Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity))
+			{
+				_velocity.x += _velocity.x > 0f ?
+					-_xDecelerateChangeDir : _xDecelerateChangeDir;
+			}
 		}
-		else if (Mathf.Abs(_velocity.x) > MIN_VELOCITY)
+		// Decelerate if there is no input
+		else if (_velocity.x != 0)
 		{
-			_velocity.x += _velocity.x > 0f ? -_xDeceleration : _xDeceleration;
+			float sign = Mathf.Sign(_velocity.x);
+
+			_velocity.x += _velocity.x > 0f ? -_xDecelerate : _xDecelerate;
+
+			// Check sign to avoid flip floping around the equilibrium
+			if (_velocity.x != 0f && Mathf.Sign(_velocity.x) != sign)
+			{
+				_velocity.x = 0f;
+			}
 		}
-		else
-		{
-			_velocity.x = 0f;
-		}
+
+		_velocity.x = Mathf.Clamp(_velocity.x, -_xVelocityMax, _xVelocityMax);
 
 		// Movement along the Y axis
 		if (_jumpTime > Time.time)
 		{
-			_velocity.y += _yAcceleration;
+			_velocity.y += _yAccelerate;
 		}
 		else if (pos.y > 0f)
 		{
-			_velocity.y += _yDeceleration;
+			_velocity.y += _yDecelerate;
 		}
 
 		pos += _velocity;
