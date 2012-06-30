@@ -26,18 +26,23 @@ public class Swordsman: MonoBehaviour
 
 	public int _moveGestureRadius = 100;
 
+	public float _swordSpeed = 30f;
+
 	#endregion Editor Configurables
 
 	public const string SWORD_TAG = "Sword";
 
 	private const int GESTURE_MOUSE_BUTTON = 0;
 
-	private const string LEFT_SWORD = "/Swordsman/LeftSword";
-	private const string RIGHT_SWORD = "/Swordsman/RightSword";
+	private const string ARM = "/Swordsman/Arm";
+	private const string SWORD = "/Swordsman/Arm/Sword";
 
 	private const string CIRCLE_TEXT = "Textures/circle";
 
 	private const float MIN_VELOCITY = 0.01f;
+	
+	private readonly Vector3 SWORD_ROT_START = new Vector3(0, 90, 90);
+	private readonly Vector3 SWORD_ROT_END = new Vector3(0, 270, 90);
 
 	private static Swordsman s_player;
 	public static Swordsman player { get { return s_player; } }
@@ -54,10 +59,10 @@ public class Swordsman: MonoBehaviour
 
 	private Vector2 _screenPos;
 
-	private float _swordTime = Single.MaxValue;
-
-	private GameObject _leftSword;
-	private GameObject _rightSword;
+	private GameObject _arm;
+	private GameObject _sword;
+	
+	private float _swordLerp;
 
 	private void Awake()
 	{
@@ -75,11 +80,10 @@ public class Swordsman: MonoBehaviour
 
 		_circle = Resources.Load(CIRCLE_TEXT) as Texture2D;
 
-		_leftSword = GameObject.Find(LEFT_SWORD);
-		_rightSword = GameObject.Find(RIGHT_SWORD);
+		_arm = GameObject.Find(ARM);
 
-		_leftSword.active = false;
-		_rightSword.active = false;
+		_sword = GameObject.Find(SWORD);
+		_sword.active = false;
 	}
 
 	private void OnGUI()
@@ -87,15 +91,25 @@ public class Swordsman: MonoBehaviour
 		GUI.DrawTexture(_rectCircle, _circle);
 	}
 
-	private void FixedUpdate()
+	private void Update()
 	{
 		input();
 		
-		// Finish sword action
-		if (_swordTime < Time.time)
+		if (_sword.active)
 		{
-			_leftSword.active = false;
-			_rightSword.active = false;
+			if (_swordLerp < 1f)
+			{
+				_sword.transform.localEulerAngles = Vector3.Lerp(
+					SWORD_ROT_START, SWORD_ROT_END, _swordLerp);
+
+				_swordLerp += Time.fixedDeltaTime * _swordSpeed;
+
+				if (_swordLerp >= 1f)
+				{
+					_sword.transform.localEulerAngles = SWORD_ROT_START;
+					_sword.active = false;
+				}
+			}
 		}
 
 		Vector3 pos = transform.position;
@@ -234,20 +248,14 @@ public class Swordsman: MonoBehaviour
 
 	private void onActionGesture()
 	{
-		Vector3 dir = _actionGesture[_actionGesture.Count-1] - _actionGesture[0];
-		
-		if (dir.x > 0)
-		{
-			_leftSword.active = false;
-			_rightSword.active = true;
-		}
-		else if (dir.x < 0)
-		{
-			_leftSword.active = true;
-			_rightSword.active = false;
-		}
+		_sword.active = true;
+		_swordLerp = 0f;
 
-		_swordTime = Time.time + _attackSpeed;
+		// Rotate the swordman's arm
+		Vector3 dir = _actionGesture[_actionGesture.Count-1] - _actionGesture[0];
+		float z = Vector3.Dot(dir.normalized, Vector3.up) * 90;
+		z = dir.x < 0f ? 180 - z : z;
+		_arm.transform.eulerAngles = new Vector3(0f, 0f, z);
 
 		_actionGesture.Clear();
 	}
