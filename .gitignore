@@ -75,3 +75,4 @@
 /Client/Library/ScriptMapper
 /Client/Library/cache
 /Client/Library/AssetVersioning.db
+*.db

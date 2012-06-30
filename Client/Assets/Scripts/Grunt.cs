@@ -6,7 +6,7 @@ public class Grunt: MonoBehaviour
 	public const string PREFAB = "Prefabs/Grunt";
 
 	private const float SPEED = 0.1f;
-	private const float MIN_DIST = 1f;
+	private const float MIN_DIST = 0.5f;
 
 	private void FixedUpdate()
 	{
@@ -23,9 +23,15 @@ public class Grunt: MonoBehaviour
 
 	private void OnCollisionEnter(Collision collision)
 	{
-		if (collision.gameObject.tag.Equals(Swordsman.SWORD_TAG))
+		string otherTag = collision.gameObject.tag;
+
+		if (otherTag.Equals(Swordsman.SWORD_TAG))
 		{
 			Destroy(gameObject);
+		}
+		else if (otherTag.Equals(Swordsman.PLAYER_TAG))
+		{
+			--Swordsman.player.health;
 		}
 	}
 }
