@@ -73,7 +73,21 @@ public class Swordsman: MonoBehaviour
 		}
 	}
 
-	private Rect _rectHealth = new Rect(0, 0, 100, 20);
+	private string _killsStr;
+
+	private int _kills;
+	public int kills
+	{
+		get { return _kills; }
+		set
+		{
+			_kills = value;
+			_killsStr = "Kills: " + _kills;
+		}
+	}
+
+	private Rect _rectHealth = new Rect(200, 10, 100, 20);
+	private Rect _rectKills = new Rect(300, 10, 100, 20);
 
 	private void Awake()
 	{
@@ -97,12 +111,14 @@ public class Swordsman: MonoBehaviour
 		_sword.active = false;
 
 		health = 100;
+		kills = 0;
 	}
 
 	private void OnGUI()
 	{
 		GUI.DrawTexture(_rectCircle, _circle);
-		GUI.Label(_rectHealth, _healthStr);
+		GUI.Box(_rectHealth, _healthStr);
+		GUI.Box(_rectKills, _killsStr);
 	}
 
 	private void Update()

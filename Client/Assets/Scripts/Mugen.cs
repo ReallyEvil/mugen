@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class Mugen: MonoBehaviour
 {
-	private const int GRUNT_COUNT = 3;
+	private const int GRUNT_COUNT = 10;
 	private const int SPAWN_DIST_MIN = 20;
-	private const int SPAWN_DIST_MAX = 25;
+	private const int SPAWN_DIST_MAX = 40;
 
 	private Object _gruntPrefab;
 

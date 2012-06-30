@@ -27,6 +27,7 @@ public class Grunt: MonoBehaviour
 
 		if (otherTag.Equals(Swordsman.SWORD_TAG))
 		{
+			++Swordsman.player.kills;
 			Destroy(gameObject);
 		}
 		else if (otherTag.Equals(Swordsman.PLAYER_TAG))
