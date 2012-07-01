@@ -1,6 +1,7 @@
 Attack Speed			= Attack duration in seconds
 X Velocity Factor		= Multiplied with gesture lenth to give velocity along the x axis
 X Velocity Max			= Maximum velocity along the x axis
+X Acceleration Max		= Maximum acceleration along the x axis
 X Decelerate			= Velocity along the x axis is declerated by this when there is no input
 X Decelerate Change Dir	= Velocity along the x axis is declerated by this when there is a change in direction
 Gravity					= Why the swordsman is not a spaceman

@@ -16,6 +16,7 @@ public class Swordsman: MonoBehaviour
 
 	public float _xVelocityFactor = 0.01f;
 	public float _xVelocityMax = 2f;
+	public float _xAccelerationMax = 0.2f;
 	public float _xDecelerate = 0.075f;
 	public float _xDecelerateChangeDir = 0.2f;
 	public float _gravity = -0.075f;
@@ -145,7 +146,8 @@ public class Swordsman: MonoBehaviour
 				((_velocity.x > 0f && _velocity.x < xVelocity) ||
 				(_velocity.x < 0f && _velocity.x > xVelocity)))
 			{
-				_velocity.x = xVelocity;
+				_velocity.x = Mathf.MoveTowards(
+					_velocity.x, xVelocity, _xAccelerationMax);
 			}
 			// Change dir
 			else if (Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity))
