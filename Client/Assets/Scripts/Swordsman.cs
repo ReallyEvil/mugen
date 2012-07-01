@@ -27,6 +27,12 @@ public class Swordsman: MonoBehaviour
 
 	public int _moveGestureRadius = 100;
 
+	public float _minActionGestureLen = 10f;
+
+	public float _dashVelocity = 1f;
+	public float _dashPeriod = 0.5f;
+	public float _dashInputPeriod = 1f;
+
 	#endregion Editor Configurables
 
 	public const string SWORD_TAG = "Sword";
@@ -36,6 +42,8 @@ public class Swordsman: MonoBehaviour
 
 	private const string ARM = "/Swordsman/Arm";
 	private const string SWORD = "/Swordsman/Arm/Sword/Cylinder";
+
+	private const string INVINCIBLE_MAT = "Materials/SwordsmanInvincible";
 
 	private const string CIRCLE_TEXT = "Textures/circle";
 
@@ -60,6 +68,12 @@ public class Swordsman: MonoBehaviour
 	private GameObject _sword;
 	
 	private float _swordTime = Single.MinValue;
+	private float _actionGestureTime = Single.MaxValue;
+
+	private float _invincibleTime = Single.MinValue;
+	private float _dashTime = Single.MinValue;
+
+	public bool isInvincible { get { return _invincibleTime > Time.time; } }
 
 	private string _healthStr;
 
@@ -90,6 +104,9 @@ public class Swordsman: MonoBehaviour
 	private Rect _rectHealth = new Rect(200, 10, 100, 20);
 	private Rect _rectKills = new Rect(300, 10, 100, 20);
 
+	private Material _normalMaterial;
+	private Material _invincibleMaterial;
+
 	private void Awake()
 	{
 		s_player = this;
@@ -113,6 +130,10 @@ public class Swordsman: MonoBehaviour
 
 		health = 100;
 		kills = 0;
+
+		_normalMaterial = _arm.renderer.material;
+		_invincibleMaterial = (Material)
+			GameObject.Instantiate(Resources.Load(INVINCIBLE_MAT));
 	}
 
 	private void OnGUI()
@@ -122,10 +143,23 @@ public class Swordsman: MonoBehaviour
 		GUI.Box(_rectKills, _killsStr);
 	}
 
+	private void invincible(float period)
+	{
+		_invincibleTime = Time.time + period;
+		_arm.renderer.material = _invincibleMaterial;
+	}
+
 	private void Update()
 	{
 		input();
 		
+		// Invincibility
+		if (!isInvincible && _arm.renderer.material != _normalMaterial)
+		{
+			_arm.renderer.material = _normalMaterial;
+		}
+
+		// Stop sword slashing
 		if (_sword.active && _swordTime < Time.time)
 		{
 			_sword.active = false;
@@ -269,16 +303,33 @@ public class Swordsman: MonoBehaviour
 
 	private void onActionGesture()
 	{
-		_sword.active = true;
-		_sword.renderer.enabled = true;
-		_swordTime = Time.time + _attackSpeed;
-
 		// Rotate the swordman's arm
 		Vector3 dir = _actionGesture[_actionGesture.Count-1] - _actionGesture[0];
-		float z = Vector3.Dot(dir.normalized, -Vector3.right) * 90;
-		z = dir.y < 0f ? 180 - z : z;
-		_arm.transform.eulerAngles = new Vector3(0f, 0f, z);
 
+		bool isAction = dir.magnitude > _minActionGestureLen;
+		
+		if (isAction)
+		{
+			float z = Vector3.Dot(dir.normalized, -Vector3.right) * 90;
+			z = dir.y < 0f ? 180 - z : z;
+			_arm.transform.eulerAngles = new Vector3(0f, 0f, z);
+
+			_sword.active = true;
+			_sword.renderer.enabled = true;
+			_swordTime = Time.time + _attackSpeed;
+		}
+		else if (_dashTime < Time.time &&
+			_dashInputPeriod > Time.time - _actionGestureTime)
+		{
+			_dashTime = Time.time + _dashPeriod;
+
+			invincible(_dashPeriod);
+
+			_velocity.x += _actionGesture[0].x > Screen.width/2 ?
+				_dashVelocity : -_dashVelocity;
+		}
+
+		_actionGestureTime = Time.time;
 		_actionGesture.Clear();
 	}
 }
