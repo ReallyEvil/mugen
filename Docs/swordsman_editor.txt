@@ -1,6 +1,7 @@
 Attack Speed			= Attack duration in seconds
 X Velocity Factor		= Multiplied with gesture lenth to give velocity along the x axis
 X Velocity Max			= Maximum velocity along the x axis
+X Acceleration Max		= Maximum acceleration along the x axis
 X Decelerate			= Velocity along the x axis is declerated by this when there is no input
 X Decelerate Change Dir	= Velocity along the x axis is declerated by this when there is a change in direction
 Gravity					= Why the swordsman is not a spaceman
@@ -9,3 +10,7 @@ Jupm Angle Factor		= Multiplied with jump angle velocity along the y axis
 Jump Height Max			= Maxium jump height (TODO)
 Jump Consecutive		= Consequective jumps allowed before hitting the ground
 Move Gesture Radius		= Radius from the swordsman gestures need to start within
+Min Action Gesture		= Action gestures are ignored if their distance is less than this
+Dash Velocity			= X velocity of the dash
+Dash Period				= Period which the player is dashing, this period controls invicibility and cannot be interrupted with another dash
+Dash Input Period		= Dash taps need to be within this period
