@@ -1,0 +1,4 @@
+- Need to change dash action; attack action is interferring with dash action.
+	- Change dash action from double tap to double swipe from the move guesture area.
+
+- REMINDER: Playable prototype to be done before 7/7/2012; 9/7/2012 at the latest as per meeting minutes taken on 17/06/2012.
