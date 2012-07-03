@@ -32,7 +32,10 @@ public class Grunt: MonoBehaviour
 		}
 		else if (otherTag.Equals(Swordsman.PLAYER_TAG))
 		{
-			--Swordsman.player.health;
+			if (!Swordsman.player.isInvincible)
+			{
+				--Swordsman.player.health;
+			}
 		}
 	}
 }
