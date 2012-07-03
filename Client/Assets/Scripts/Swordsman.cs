@@ -74,6 +74,7 @@ public class Swordsman: MonoBehaviour
 	private float _dashTime = Single.MinValue;
 
 	public bool isInvincible { get { return _invincibleTime > Time.time; } }
+	public bool isDashing { get { return _dashTime > Time.time; } }
 
 	private string _healthStr;
 
@@ -207,7 +208,7 @@ public class Swordsman: MonoBehaviour
 		_velocity.x = Mathf.Clamp(_velocity.x, -_xVelocityMax, _xVelocityMax);
 
 		// Movement along the Y axis
-		if (pos.y > 0f)
+		if (pos.y > 0f && !isDashing)
 		{
 			_velocity.y += _gravity;
 		}
@@ -322,6 +323,9 @@ public class Swordsman: MonoBehaviour
 			_dashInputPeriod > Time.time - _actionGestureTime)
 		{
 			_dashTime = Time.time + _dashPeriod;
+
+			// Dashing cancels jumps
+			_velocity.y = 0f;
 
 			invincible(_dashPeriod);
 
