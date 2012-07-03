@@ -313,6 +313,7 @@ public class Swordsman: MonoBehaviour
 		{
 			float z = Vector3.Dot(dir.normalized, -Vector3.right) * 90;
 			z = dir.y < 0f ? 180 - z : z;
+			z = snapDirection(z);
 			_arm.transform.eulerAngles = new Vector3(0f, 0f, z);
 
 			_sword.active = true;
@@ -335,5 +336,45 @@ public class Swordsman: MonoBehaviour
 
 		_actionGestureTime = Time.time;
 		_actionGesture.Clear();
+	}
+
+	// Snaps 360 degress into the 8 directional attack directions
+	private float snapDirection(float angle)
+	{
+		if (angle > -22.5f && angle <= 22.5f)
+		{
+			return 0f;
+		}
+		else if (angle > 22.5f && angle <= 67.5f)
+		{
+			return 45f;
+		}
+		else if (angle > 67.5 && angle <= 112.5f)
+		{
+			return 90f;
+		}
+		else if (angle > 112.5f && angle <= 157.5f)
+		{
+			return 135f;
+		}
+		else if (angle > 157.5f && angle <= 202.5f)
+		{
+			return 180f;
+		}
+		else if (angle > 202.5f && angle <= 247.5f)
+		{
+			return 225f;
+		}
+		else if (angle > 247.5f || angle < -67.5f)
+		{
+			return 270f;
+		}
+		else if (angle > -67.5f && angle < -22.5f)
+		{
+			return 315f;
+		}
+
+		Debug.Log("Error in snapping angle to 8 directions");
+		return 0;
 	}
 }
