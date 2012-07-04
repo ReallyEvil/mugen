@@ -23,3 +23,6 @@
 - Need Jumping Power.
 
 - REMINDER: Playable prototype to be done before 7/7/2012; 9/7/2012 at the latest as per meeting minutes taken on 17/06/2012.
+
+- Enemies for Proof of concept: "Grunt", "Archer Grunt", "Big Grunt"
+	- All enemies should have a detection distance, visable attack patterns and MAYBE defined max health.
