@@ -11,9 +11,10 @@ public class Grunt: MonoBehaviour
 	#region Editor Configurables
 	public int _maxHealth = 10;
 	public int _points = 1;
-	private float _speed = 0.1f;
+	public float _speed = 0.05f;
 	public float _minDistance = 0.5f;
-	public float _hitStunPeriod = 3f;
+	public float _hitStunPeriod = 1f;
+	public float _alertRadius = 10f;
 	#endregion Editor Configurables
 
 	private int _health;
@@ -46,8 +47,10 @@ public class Grunt: MonoBehaviour
 			gameObject.transform.position;
 		dir.y = 0f;
 		dir.z = 0f;
+		
+		float absX = Mathf.Abs(dir.x);
 
-		if (Mathf.Abs(dir.x) > _minDistance)
+		if (absX > _minDistance && absX < _alertRadius)
 		{
 			gameObject.transform.position += _speed*dir.normalized;
 		}

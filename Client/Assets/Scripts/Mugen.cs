@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class Mugen: MonoBehaviour
 {
-	private const int GRUNT_COUNT = 2;
-	private const int SPAWN_DIST_MIN = 20;
-	private const int SPAWN_DIST_MAX = 40;
+	#region Editor Configurables
+	public int _gruntCount = 5;
+	public int _spawnDistMin = 5;
+	public int _spawnDistMax = 20;
+	#endregion Editor Configurables
 
 	private const int GAME_OVER_WIDTH = 400;
 	private const int GAME_OVER_HEIGHT = 400;
@@ -40,11 +42,11 @@ public class Mugen: MonoBehaviour
 
 		// Continously spawn an enemy near the swordsman
 		int spawnCount =
-			GRUNT_COUNT - GameObject.FindGameObjectsWithTag(Grunt.TAG).Length;
+			_gruntCount - GameObject.FindGameObjectsWithTag(Grunt.TAG).Length;
 
 		for (int i = 0; i < spawnCount; ++i)
 		{
-			float dist = Random.Range(SPAWN_DIST_MIN, SPAWN_DIST_MAX) *
+			float dist = Random.Range(_spawnDistMin, _spawnDistMax) *
 				(Random.value > 0.5f ? -1f : 1f);
 
 			GameObject grunt = Instantiate(_gruntPrefab) as GameObject;
