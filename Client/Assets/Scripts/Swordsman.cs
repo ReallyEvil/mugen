@@ -50,6 +50,9 @@ public class Swordsman: MonoBehaviour
 
 	private const float MIN_VELOCITY = 0.01f;
 	
+	public const int MIN_HEALTH = 0;
+	public const int MAX_HEALTH = 100;
+
 	private static Swordsman s_player;
 	public static Swordsman player { get { return s_player; } }
 
@@ -85,26 +88,28 @@ public class Swordsman: MonoBehaviour
 		get { return _health; }
 		set
 		{
-			_health = value;
+			_health = Mathf.Clamp(value, MIN_HEALTH, MAX_HEALTH);
 			_healthStr = "Health: " + _health;
+			_rectHealth.width = Screen.width * ((float)_health)/MAX_HEALTH;
 		}
 	}
 
-	private string _killsStr;
+	private string _scoreStr;
 
-	private int _kills;
-	public int kills
+	private int _score;
+	public int score
 	{
-		get { return _kills; }
+		get { return _score; }
 		set
 		{
-			_kills = value;
-			_killsStr = "Kills: " + _kills;
+			_score = value;
+			_scoreStr = "Score: " + _score;
 		}
 	}
 
-	private Rect _rectHealth = new Rect(200, 10, 100, 20);
-	private Rect _rectKills = new Rect(300, 10, 100, 20);
+	private Rect _rectHealth = new Rect(0, 0, Screen.width, 20);
+
+	private Rect _rectScore = new Rect(0, 20, 100, 20);
 
 	private Material _normalMaterial;
 	private Material _invincibleMaterial;
@@ -131,7 +136,7 @@ public class Swordsman: MonoBehaviour
 		_sword.active = false;
 
 		health = 100;
-		kills = 0;
+		score = 0;
 
 		_normalMaterial = _arm.renderer.material;
 		_invincibleMaterial = (Material)
@@ -142,7 +147,7 @@ public class Swordsman: MonoBehaviour
 	{
 		GUI.DrawTexture(_rectCircle, _circle);
 		GUI.Box(_rectHealth, _healthStr);
-		GUI.Box(_rectKills, _killsStr);
+		GUI.Box(_rectScore, _scoreStr);
 	}
 
 	private void invincible(float period)

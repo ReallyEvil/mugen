@@ -8,6 +8,8 @@ public class Grunt: MonoBehaviour
 	private const float SPEED = 0.1f;
 	private const float MIN_DIST = 0.5f;
 
+	private const int SCORE = 1;
+
 	private void FixedUpdate()
 	{
 		Vector3 dir = Swordsman.player.gameObject.transform.position - 
@@ -27,7 +29,7 @@ public class Grunt: MonoBehaviour
 
 		if (otherTag.Equals(Swordsman.SWORD_TAG))
 		{
-			++Swordsman.player.kills;
+			Swordsman.player.score += SCORE;
 			Destroy(gameObject);
 		}
 		else if (otherTag.Equals(Swordsman.PLAYER_TAG))
