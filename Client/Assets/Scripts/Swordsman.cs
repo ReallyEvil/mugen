@@ -159,7 +159,11 @@ public class Swordsman: MonoBehaviour
 
 	private void Update()
 	{
-		input();
+		// Penalty for dashing is the lack of input
+		if (!isDashing)
+		{
+			input();
+		}
 		
 		// Invincibility
 		if (!isInvincible && _arm.renderer.material != _normalMaterial)
