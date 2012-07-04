@@ -22,7 +22,7 @@ public class Swordsman: MonoBehaviour
 	public float _gravity = -0.007f;
 
 	public float _jumpAngleMin = 0.25f;
-	public float _jumpAngleFactor = 0.35f;
+	public float _jumpFactor = 0.0015f;
 	public int _jumpConsecutive = 2;
 
 	public int _moveGestureRadius = 50;
@@ -217,6 +217,7 @@ public class Swordsman: MonoBehaviour
 		if (pos.y > 0f && !isDashing)
 		{
 			_velocity.y += _gravity;
+			Debug.Log(_velocity);
 		}
 
 		pos += _velocity;
@@ -301,7 +302,7 @@ public class Swordsman: MonoBehaviour
 
 		if (_jumps > 0 && dot > _jumpAngleMin)
 		{
-			_velocity.y = _jumpAngleFactor*dot;
+			_velocity += dir * _jumpFactor;
 			--_jumps;
 		}
 
