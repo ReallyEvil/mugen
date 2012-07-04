@@ -16,4 +16,10 @@
 
 - We need something to simulate player's progress through the tower. At the moment we can get away with indicating the wave number of enemy spawn.
 
+- Need to make separate parameters for air dashing; cant reuse ground dash properties.
+
+- Modify ground dash properties: create properties for Dash Distance and Invincibility Period to replace Dash Velocity and Dash Period.
+
+- Need Jumping Power.
+
 - REMINDER: Playable prototype to be done before 7/7/2012; 9/7/2012 at the latest as per meeting minutes taken on 17/06/2012.
