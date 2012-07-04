@@ -217,7 +217,6 @@ public class Swordsman: MonoBehaviour
 		if (pos.y > 0f && !isDashing)
 		{
 			_velocity.y += _gravity;
-			Debug.Log(_velocity);
 		}
 
 		pos += _velocity;
