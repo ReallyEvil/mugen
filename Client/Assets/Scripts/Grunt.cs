@@ -8,6 +8,9 @@ public class Grunt: MonoBehaviour
 	private const int HEALTH_Y = 200;
 	private const int HEALTH_HEIGHT = 10;
 
+	private readonly Vector3 ROT_RIGHT = new Vector3(0, 0, 0);
+	private readonly Vector3 ROT_LEFT = new Vector3(0, 180, 0);
+
 	#region Editor Configurables
 	public int _maxHealth = 10;
 	public int _points = 1;
@@ -53,6 +56,7 @@ public class Grunt: MonoBehaviour
 		if (absX > _minDistance && absX < _alertRadius)
 		{
 			gameObject.transform.position += _speed*dir.normalized;
+			gameObject.transform.eulerAngles = dir.x > 0 ? ROT_RIGHT : ROT_LEFT;
 		}
 	}
 
