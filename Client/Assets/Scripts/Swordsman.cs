@@ -14,24 +14,25 @@ public class Swordsman: MonoBehaviour
 	#region Editor Configurables
 	public float _attackSpeed = 0.1f;
 
-	public float _xVelocityFactor = 0.01f;
-	public float _xVelocityMax = 2f;
-	public float _xAccelerationMax = 0.2f;
-	public float _xDecelerate = 0.075f;
-	public float _xDecelerateChangeDir = 0.2f;
-	public float _gravity = -0.075f;
+	public float _xVelocityFactor = 0.0006f;
+	public float _xVelocityMax = 0.5f;
+	public float _xAccelerationMax = 0.02f;
+	public float _xDecelerate = 0.01f;
+	public float _xDecelerateChangeDir = 0.02f;
+	public float _gravity = -0.007f;
 
 	public float _jumpAngleMin = 0.25f;
-	public float _jumpAngleFactor = 2f;
+	public float _jumpAngleFactor = 0.35f;
 	public int _jumpConsecutive = 2;
 
-	public int _moveGestureRadius = 100;
+	public int _moveGestureRadius = 50;
 
-	public float _minActionGestureLen = 10f;
+	public float _minActionGestureLen = 5f;
 
-	public float _dashVelocity = 1f;
-	public float _dashPeriod = 0.5f;
-	public float _dashInputPeriod = 1f;
+	public float _dashVelocity = 0.4f;
+	public float _dashPeriod = 1f;
+	public float _dashInvinciblePeriod = 0.5f;
+	public float _dashInputPeriod = 0.2f;
 
 	#endregion Editor Configurables
 
@@ -328,7 +329,7 @@ public class Swordsman: MonoBehaviour
 			// Dashing cancels jumps
 			_velocity.y = 0f;
 
-			invincible(_dashPeriod);
+			invincible(_dashInvinciblePeriod);
 
 			_velocity.x += _actionGesture[0].x > Screen.width/2 ?
 				_dashVelocity : -_dashVelocity;
