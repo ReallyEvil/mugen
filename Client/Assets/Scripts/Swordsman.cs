@@ -79,6 +79,7 @@ public class Swordsman: MonoBehaviour
 
 	public bool isInvincible { get { return _invincibleTime > Time.time; } }
 	public bool isDashing { get { return _dashTime > Time.time; } }
+	public bool isSlashing { get { return _swordTime > Time.time; } }
 
 	private string _healthStr;
 
@@ -167,7 +168,7 @@ public class Swordsman: MonoBehaviour
 		}
 
 		// Stop sword slashing
-		if (_sword.active && _swordTime < Time.time)
+		if (_sword.active && !isSlashing)
 		{
 			_sword.active = false;
 			_sword.renderer.enabled = false;
@@ -214,7 +215,7 @@ public class Swordsman: MonoBehaviour
 		_velocity.x = Mathf.Clamp(_velocity.x, -_xVelocityMax, _xVelocityMax);
 
 		// Movement along the Y axis
-		if (pos.y > 0f && !isDashing)
+		if (pos.y > 0f && !isDashing && !isSlashing)
 		{
 			_velocity.y += _gravity;
 		}
@@ -325,6 +326,9 @@ public class Swordsman: MonoBehaviour
 			_sword.active = true;
 			_sword.renderer.enabled = true;
 			_swordTime = Time.time + _attackSpeed;
+
+			// Slashing cancels Y velocity
+			_velocity.y = 0f;
 		}
 		else if (_dashTime < Time.time &&
 			_dashInputPeriod > Time.time - _actionGestureTime)
