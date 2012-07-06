@@ -10,6 +10,8 @@ public class Mugen: MonoBehaviour
 	public int _spawnDistMax = 20;
 	#endregion Editor Configurables
 
+	public const string LEVEL_NAME = "Mugen";
+
 	private const int GAME_OVER_WIDTH = 400;
 	private const int GAME_OVER_HEIGHT = 400;
 
