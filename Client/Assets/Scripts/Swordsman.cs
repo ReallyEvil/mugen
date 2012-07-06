@@ -12,7 +12,8 @@ public class Swordsman: MonoBehaviour
 	}
 
 	#region Editor Configurables
-	public float _attackSpeed = 0.1f;
+	public float _slashPeriod = 0.1f;
+	public Vector3 _slashEffectVelocity = new Vector3(0f, 0.001f, 0f);
 
 	public float _xVelocityFactorGround = 0.0006f;
 	public float _xVelocityFactorAir = 0.0003f;
@@ -74,7 +75,7 @@ public class Swordsman: MonoBehaviour
 	private GameObject _arm;
 	private GameObject _sword;
 	
-	private float _swordTime = Single.MinValue;
+	private float _slashTime = Single.MinValue;
 	private float _actionGestureTime = Single.MaxValue;
 
 	private float _invincibleTime = Single.MinValue;
@@ -82,7 +83,7 @@ public class Swordsman: MonoBehaviour
 
 	public bool isInvincible { get { return _invincibleTime > Time.time; } }
 	public bool isDashing { get { return _dashTime > Time.time; } }
-	public bool isSlashing { get { return _swordTime > Time.time; } }
+	public bool isSlashing { get { return _slashTime > Time.time; } }
 
 	private string _healthStr;
 
@@ -352,7 +353,9 @@ public class Swordsman: MonoBehaviour
 
 			_sword.active = true;
 			_sword.renderer.enabled = true;
-			_swordTime = Time.time + _attackSpeed;
+			_slashTime = Time.time + _slashPeriod;
+
+			_velocity += _slashEffectVelocity;
 		}
 		else if (_dashTime < Time.time &&
 			_dashInputPeriod > Time.time - _actionGestureTime)
