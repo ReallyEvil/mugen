@@ -14,7 +14,8 @@ public class Swordsman: MonoBehaviour
 	#region Editor Configurables
 	public float _attackSpeed = 0.1f;
 
-	public float _xVelocityFactor = 0.0006f;
+	public float _xVelocityFactorGround = 0.0006f;
+	public float _xVelocityFactorAir = 0.0003f;
 	public float _xVelocityMax = 0.5f;
 	public float _xAccelerationMax = 0.02f;
 	public float _friction = 0.01f;
@@ -185,7 +186,7 @@ public class Swordsman: MonoBehaviour
 		{
 			float xVelocity =
 				(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
-				_xVelocityFactor;
+				pos.y == 0f ? _xVelocityFactorGround : _xVelocityFactorAir;
 
 			// Faster
 			if (_velocity.x == 0f ||

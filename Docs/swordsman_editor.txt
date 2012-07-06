@@ -1,5 +1,6 @@
 Attack Speed			= Attack duration in seconds
-X Velocity Factor		= Multiplied with gesture lenth to give velocity along the x axis
+X Velocity Factor Ground= Multiplied with gesture lenth to give velocity along the x axis when on the ground
+X Velocity Factor Air	= Multiplied with gesture lenth to give velocity along the x axis when in the air
 X Velocity Max			= Maximum velocity along the x axis
 X Acceleration Max		= Maximum acceleration along the x axis
 Friction				= Reduces velocity along the x axis when on the ground
