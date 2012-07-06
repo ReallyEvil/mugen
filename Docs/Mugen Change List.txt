@@ -26,3 +26,14 @@
 
 - Enemies for Proof of concept: "Grunt", "Archer Grunt", "Big Grunt"
 	- All enemies should have a detection distance, visable attack patterns and MAYBE defined max health.
+
+==Agenda for Friday 6/07/2012==
+
+- Complete Airdashing
+	- Separate parameters from ground dash
+
+- Grunt enemy attack pattern and spawn point
+
+- Platforming collision detection
+
+- Tuttorial screen
