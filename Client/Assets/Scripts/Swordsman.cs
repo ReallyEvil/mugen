@@ -14,6 +14,7 @@ public class Swordsman: MonoBehaviour
 	#region Editor Configurables
 	public float _slashPeriod = 0.1f;
 	public float _slashEffectVelocityY = 0.001f;
+	public float _slashEffectVelocityX = -0.001f;
 
 	public float _xVelocityFactorGround = 0.0006f;
 	public float _xVelocityFactorAir = 0.0003f;
@@ -360,6 +361,8 @@ public class Swordsman: MonoBehaviour
 			{
 				_velocity.y += _slashEffectVelocityY;
 			}
+
+			_velocity.x += _slashEffectVelocityX * (dir.x > 0 ? 1 : -1);
 		}
 		else if (_dashTime < Time.time &&
 			_dashInputPeriod > Time.time - _actionGestureTime)
