@@ -192,7 +192,7 @@ public class Swordsman: MonoBehaviour
 					(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
 					_xVelocityFactorGround;
 
-				// Faster
+				// Ignore slower velocities in the same direction
 				if (_velocity.x == 0f ||
 					((_velocity.x > 0f && _velocity.x < xVelocity) ||
 					(_velocity.x < 0f && _velocity.x > xVelocity)))
@@ -200,7 +200,7 @@ public class Swordsman: MonoBehaviour
 					_velocity.x = Mathf.MoveTowards(
 						_velocity.x, xVelocity, _xAccelerationMax);
 				}
-				// Decelerate when Changing dir
+				// Decelerate when changing dir
 				else if (Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity))
 				{
 					_velocity.x += _velocity.x > 0f ?
@@ -228,8 +228,15 @@ public class Swordsman: MonoBehaviour
 				(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
 				_xVelocityFactorAir;
 
-			_velocity.x = Mathf.MoveTowards(
-				_velocity.x, xVelocity, _xAccelerationMax);
+			// Faster
+			if (_velocity.x == 0f ||
+				((_velocity.x > 0f && _velocity.x < xVelocity) ||
+				(_velocity.x < 0f && _velocity.x > xVelocity)) ||
+				Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity))
+			{
+				_velocity.x = Mathf.MoveTowards(
+					_velocity.x, xVelocity, _xAccelerationMax);
+			}
 		}
 
 		_velocity.x = Mathf.Clamp(_velocity.x, -_xVelocityMax, _xVelocityMax);
