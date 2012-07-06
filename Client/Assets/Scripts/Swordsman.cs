@@ -30,8 +30,10 @@ public class Swordsman: MonoBehaviour
 
 	public float _minActionGestureLen = 5f;
 
-	public float _dashVelocity = 0.4f;
-	public float _dashPeriod = 1f;
+	public float _dashVelocityGround = 0.4f;
+	public float _dashPeriodGround = 1f;
+	public float _dashVelocityAir = 0.1f;
+	public float _dashPeriodAir = 1f;
 	public float _dashInvinciblePeriod = 0.5f;
 	public float _dashInputPeriod = 0.2f;
 
@@ -339,19 +341,25 @@ public class Swordsman: MonoBehaviour
 		else if (_dashTime < Time.time &&
 			_dashInputPeriod > Time.time - _actionGestureTime)
 		{
-			_dashTime = Time.time + _dashPeriod;
-
 			// Dashing cancels jumps
 			_velocity.y = 0f;
 
 			// Only invincible when dashing along the ground
+			// Dashing has different parameters in the air
 			if (transform.position.y == 0f)
 			{
 				invincible(_dashInvinciblePeriod);
-			}
 
-			_velocity.x += _actionGesture[0].x > Screen.width/2 ?
-				_dashVelocity : -_dashVelocity;
+				_dashTime = Time.time + _dashPeriodGround;
+				_velocity.x += _actionGesture[0].x > Screen.width/2 ?
+					_dashVelocityGround : -_dashVelocityGround;
+			}
+			else
+			{
+				_dashTime = Time.time + _dashPeriodAir;
+				_velocity.x += _actionGesture[0].x > Screen.width/2 ?
+					_dashPeriodAir : -_dashPeriodAir;
+			}
 		}
 
 		_actionGestureTime = Time.time;
