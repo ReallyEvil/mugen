@@ -186,7 +186,7 @@ public class Swordsman: MonoBehaviour
 		{
 			float xVelocity =
 				(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
-				pos.y == 0f ? _xVelocityFactorGround : _xVelocityFactorAir;
+				(pos.y == 0f ? _xVelocityFactorGround : _xVelocityFactorAir);
 
 			// Faster
 			if (_velocity.x == 0f ||
