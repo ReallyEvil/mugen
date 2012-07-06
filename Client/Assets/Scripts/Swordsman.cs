@@ -344,7 +344,11 @@ public class Swordsman: MonoBehaviour
 			// Dashing cancels jumps
 			_velocity.y = 0f;
 
-			invincible(_dashInvinciblePeriod);
+			// Only invincible when dashing along the ground
+			if (transform.position.y == 0f)
+			{
+				invincible(_dashInvinciblePeriod);
+			}
 
 			_velocity.x += _actionGesture[0].x > Screen.width/2 ?
 				_dashVelocity : -_dashVelocity;
