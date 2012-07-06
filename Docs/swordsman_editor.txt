@@ -1,5 +1,5 @@
 Slash Speed				= Attack duration in seconds
-Slash Effect Velocity	= Velocity added to the swordsman when performing a slash
+Slash Effect Velocity Y	= Velocity added to when the swordsman is falling and slashing
 X Velocity Factor Ground= Multiplied with gesture lenth to give velocity along the x axis when on the ground
 X Velocity Factor Air	= Multiplied with gesture lenth to give velocity along the x axis when in the air
 X Velocity Max			= Maximum velocity along the x axis
