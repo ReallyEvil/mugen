@@ -14,11 +14,12 @@ public class Swordsman: MonoBehaviour
 	#region Editor Configurables
 	public float _attackSpeed = 0.1f;
 
-	public float _xVelocityFactor = 0.0006f;
+	public float _xVelocityFactorGround = 0.0006f;
+	public float _xVelocityFactorAir = 0.0003f;
 	public float _xVelocityMax = 0.5f;
 	public float _xAccelerationMax = 0.02f;
-	public float _xDecelerate = 0.01f;
-	public float _xDecelerateChangeDir = 0.02f;
+	public float _friction = 0.01f;
+	public float _frictionChangeDir = 0.02f;
 	public float _gravity = -0.007f;
 
 	public float _jumpAngleMin = 0.25f;
@@ -185,7 +186,7 @@ public class Swordsman: MonoBehaviour
 		{
 			float xVelocity =
 				(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
-				_xVelocityFactor;
+				pos.y == 0f ? _xVelocityFactorGround : _xVelocityFactorAir;
 
 			// Faster
 			if (_velocity.x == 0f ||
@@ -195,19 +196,20 @@ public class Swordsman: MonoBehaviour
 				_velocity.x = Mathf.MoveTowards(
 					_velocity.x, xVelocity, _xAccelerationMax);
 			}
-			// Change dir
-			else if (Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity))
+			// Decelerate when Changing dir and on the ground
+			else if (pos.y == 0f &&
+				Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity))
 			{
 				_velocity.x += _velocity.x > 0f ?
-					-_xDecelerateChangeDir : _xDecelerateChangeDir;
+					-_frictionChangeDir : _frictionChangeDir;
 			}
 		}
-		// Decelerate if there is no input
-		else if (_velocity.x != 0)
+		// Decelerate if there is no input and on the ground
+		else if (_velocity.x != 0 && pos.y == 0f)
 		{
 			float sign = Mathf.Sign(_velocity.x);
 
-			_velocity.x += _velocity.x > 0f ? -_xDecelerate : _xDecelerate;
+			_velocity.x += _velocity.x > 0f ? -_friction : _friction;
 
 			// Check sign to avoid flip floping around the equilibrium
 			if (_velocity.x != 0f && Mathf.Sign(_velocity.x) != sign)
