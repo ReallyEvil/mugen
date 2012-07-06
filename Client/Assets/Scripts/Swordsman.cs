@@ -13,7 +13,7 @@ public class Swordsman: MonoBehaviour
 
 	#region Editor Configurables
 	public float _slashPeriod = 0.1f;
-	public Vector3 _slashEffectVelocity = new Vector3(0f, 0.001f, 0f);
+	public float _slashEffectVelocityY = 0.001f;
 
 	public float _xVelocityFactorGround = 0.0006f;
 	public float _xVelocityFactorAir = 0.0003f;
@@ -340,7 +340,8 @@ public class Swordsman: MonoBehaviour
 	private void onActionGesture()
 	{
 		// Rotate the swordman's arm
-		Vector3 dir = _actionGesture[_actionGesture.Count-1] - _actionGesture[0];
+		Vector3 dir =
+			_actionGesture[_actionGesture.Count-1] - _actionGesture[0];
 
 		bool isAction = dir.magnitude > _minActionGestureLen;
 		
@@ -355,7 +356,10 @@ public class Swordsman: MonoBehaviour
 			_sword.renderer.enabled = true;
 			_slashTime = Time.time + _slashPeriod;
 
-			_velocity += _slashEffectVelocity;
+			if (_velocity.y < 0f)
+			{
+				_velocity.y += _slashEffectVelocityY;
+			}
 		}
 		else if (_dashTime < Time.time &&
 			_dashInputPeriod > Time.time - _actionGestureTime)
