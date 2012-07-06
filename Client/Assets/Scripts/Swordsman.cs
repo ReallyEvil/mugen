@@ -353,9 +353,6 @@ public class Swordsman: MonoBehaviour
 			_sword.active = true;
 			_sword.renderer.enabled = true;
 			_swordTime = Time.time + _attackSpeed;
-
-			// Slashing cancels Y velocity
-			_velocity.y = 0f;
 		}
 		else if (_dashTime < Time.time &&
 			_dashInputPeriod > Time.time - _actionGestureTime)
