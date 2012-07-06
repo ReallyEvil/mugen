@@ -183,42 +183,53 @@ public class Swordsman: MonoBehaviour
 
 		Vector3 pos = transform.position;
 
-		// Process x axis movement
-		if (_moveGesture.Count > 1)
+		// Process x axis movement when on the ground
+		if (pos.y == 0f)
+		{
+			if (_moveGesture.Count > 1)
+			{
+				float xVelocity =
+					(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
+					_xVelocityFactorGround;
+
+				// Faster
+				if (_velocity.x == 0f ||
+					((_velocity.x > 0f && _velocity.x < xVelocity) ||
+					(_velocity.x < 0f && _velocity.x > xVelocity)))
+				{
+					_velocity.x = Mathf.MoveTowards(
+						_velocity.x, xVelocity, _xAccelerationMax);
+				}
+				// Decelerate when Changing dir
+				else if (Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity))
+				{
+					_velocity.x += _velocity.x > 0f ?
+						-_frictionChangeDir : _frictionChangeDir;
+				}
+			}
+			// Decelerate if there is no input and on the ground
+			else if (_velocity.x != 0)
+			{
+				float sign = Mathf.Sign(_velocity.x);
+
+				_velocity.x += _velocity.x > 0f ? -_friction : _friction;
+
+				// Check sign to avoid flip floping around the equilibrium
+				if (_velocity.x != 0f && Mathf.Sign(_velocity.x) != sign)
+				{
+					_velocity.x = 0f;
+				}
+			}
+		}
+		// Process x axis movement when in the air
+		else if (_moveGesture.Count > 1)
 		{
 			float xVelocity =
 				(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
-				(pos.y == 0f ? _xVelocityFactorGround : _xVelocityFactorAir);
+				_xVelocityFactorAir;
 
-			// Apply velocity along the x axis if 1) we are air the air
-			// or 2) we are on the ground and its an increase
-			if (pos.y > 0f || _velocity.x == 0f ||
-				((_velocity.x > 0f && _velocity.x < xVelocity) ||
-				(_velocity.x < 0f && _velocity.x > xVelocity)))
-			{
-				_velocity.x = Mathf.MoveTowards(
-					_velocity.x, xVelocity, _xAccelerationMax);
-			}
-			// Decelerate when Changing dir and on the ground
-			else if (pos.y == 0f &&
-				Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity))
-			{
-				_velocity.x += _velocity.x > 0f ?
-					-_frictionChangeDir : _frictionChangeDir;
-			}
-		}
-		// Decelerate if there is no input and on the ground
-		else if (_velocity.x != 0 && pos.y == 0f)
-		{
-			float sign = Mathf.Sign(_velocity.x);
-
-			_velocity.x += _velocity.x > 0f ? -_friction : _friction;
-
-			// Check sign to avoid flip floping around the equilibrium
-			if (_velocity.x != 0f && Mathf.Sign(_velocity.x) != sign)
-			{
-				_velocity.x = 0f;
-			}
+			_velocity.x = Mathf.MoveTowards(
+				_velocity.x, xVelocity, _xAccelerationMax);
 		}
 
 		_velocity.x = Mathf.Clamp(_velocity.x, -_xVelocityMax, _xVelocityMax);
