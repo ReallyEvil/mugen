@@ -39,11 +39,11 @@ public class Swordsman: MonoBehaviour
 	public float _dashPeriodAir = 1f;
 	public float _dashInvinciblePeriod = 0.5f;
 	public float _dashInputPeriod = 0.2f;
-
 	#endregion Editor Configurables
 
-	public const string SWORD_TAG = "Sword";
-	public const string PLAYER_TAG = "Player";
+	public const string TAG_SWORD = "Sword";
+	public const string TAG_PLAYER = "Player";
+	public const string TAG_WALL = "Wall";
 
 	private const int GESTURE_MOUSE_BUTTON = 0;
 
@@ -58,6 +58,8 @@ public class Swordsman: MonoBehaviour
 	
 	public const int MIN_HEALTH = 0;
 	public const int MAX_HEALTH = 100;
+
+	public readonly Vector3 GIRTH = new Vector3(0.5f, 0, 0);
 
 	private static Swordsman s_player;
 	public static Swordsman player { get { return s_player; } }
@@ -437,5 +439,15 @@ public class Swordsman: MonoBehaviour
 
 		Debug.Log("Error in snapping angle to 8 directions");
 		return 0;
+	}
+
+	private void OnCollisionEnter(Collision collision)
+	{
+		if (collision.gameObject.tag.Equals(TAG_WALL))
+		{
+			_velocity.x = 0f;
+			transform.position += GIRTH *
+				(collision.transform.position.x < transform.position.x ? 1:-1);
+		}
 	}
 }

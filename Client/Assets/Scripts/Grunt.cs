@@ -73,7 +73,7 @@ public class Grunt: MonoBehaviour
 	{
 		string otherTag = collision.gameObject.tag;
 
-		if (otherTag.Equals(Swordsman.SWORD_TAG))
+		if (otherTag.Equals(Swordsman.TAG_SWORD))
 		{
 			_hitStun = Time.time + _hitStunPeriod;
 
@@ -83,7 +83,7 @@ public class Grunt: MonoBehaviour
 				Destroy(gameObject);
 			}
 		}
-		else if (otherTag.Equals(Swordsman.PLAYER_TAG))
+		else if (otherTag.Equals(Swordsman.TAG_PLAYER))
 		{
 			if (!Swordsman.player.isInvincible)
 			{
