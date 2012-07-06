@@ -27,6 +27,8 @@
 - Enemies for Proof of concept: "Grunt", "Archer Grunt", "Big Grunt"
 	- All enemies should have a detection distance, visable attack patterns and MAYBE defined max health.
 
+- Make the game frame rate independent.
+
 ==Agenda for Friday 6/07/2012==
 
 - Complete Airdashing
