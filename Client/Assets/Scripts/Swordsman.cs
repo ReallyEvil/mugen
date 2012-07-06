@@ -190,8 +190,9 @@ public class Swordsman: MonoBehaviour
 				(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
 				(pos.y == 0f ? _xVelocityFactorGround : _xVelocityFactorAir);
 
-			// Faster
-			if (_velocity.x == 0f ||
+			// Apply velocity along the x axis if 1) we are air the air
+			// or 2) we are on the ground and its an increase
+			if (pos.y > 0f || _velocity.x == 0f ||
 				((_velocity.x > 0f && _velocity.x < xVelocity) ||
 				(_velocity.x < 0f && _velocity.x > xVelocity)))
 			{
