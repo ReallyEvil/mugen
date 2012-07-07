@@ -39,3 +39,24 @@
 - Platforming collision detection
 
 - Tuttorial screen
+
+==Agenda for Sunday 8/07/2012==
+
+- Solve issue about air dashing velocity not changing
+
+- Solve issue about sudden dash upon very first input
+
+- Complete Platforming mechanics
+	- Floor colliders
+	- Wall jumping
+
+- Complete grunt enemy attack pattern and spawn position
+	- Also expose enemy parameters in unity editor
+
+- Continue working on run animation
+
+==Agenda for Wednesday 11/07/2012==
+
+- Joint agreement terms and conditions.
+
+- Review feature list and plan next course of action.
