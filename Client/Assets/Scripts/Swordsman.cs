@@ -44,7 +44,6 @@ public class Swordsman: MonoBehaviour
 	public const string TAG_SWORD = "Sword";
 	public const string TAG_PLAYER = "Player";
 	public const string TAG_WALL = "Wall";
-	public const string TAG_PLATFORM = "Floor";
 
 	private const int GESTURE_MOUSE_BUTTON = 0;
 
@@ -124,8 +123,6 @@ public class Swordsman: MonoBehaviour
 	private Material _normalMaterial;
 	private Material _invincibleMaterial;
 
-	private Collider _platform;
-
 	private void Awake()
 	{
 		s_player = this;
@@ -191,8 +188,8 @@ public class Swordsman: MonoBehaviour
 
 		Vector3 pos = transform.position;
 
-		// Process x axis movement when on a platform
-		if (_platform != null)
+		// Process x axis movement when on the ground
+		if (pos.y == 0f)
 		{
 			if (_moveGesture.Count > 1)
 			{
@@ -215,7 +212,7 @@ public class Swordsman: MonoBehaviour
 						-_frictionChangeDir : _frictionChangeDir;
 				}
 			}
-			// Decelerate if there is no input
+			// Decelerate if there is no input and on the ground
 			else if (_velocity.x != 0)
 			{
 				float sign = Mathf.Sign(_velocity.x);
@@ -250,12 +247,20 @@ public class Swordsman: MonoBehaviour
 		_velocity.x = Mathf.Clamp(_velocity.x, -_xVelocityMax, _xVelocityMax);
 
 		// Movement along the Y axis
-		if (_platform == null && !isDashing && !isSlashing)
+		if (pos.y > 0f && !isDashing && !isSlashing)
 		{
 			_velocity.y += _gravity;
 		}
 
 		pos += _velocity;
+		
+		// Don't go below the ground
+		if (transform.position.y < 0f)
+		{
+			pos.y = 0f;
+			_velocity.y = 0f;
+			_jumps = _jumpConsecutive;
+		}
 
 		transform.position = pos;
 	}
@@ -444,28 +449,6 @@ public class Swordsman: MonoBehaviour
 			_velocity.x = 0f;
 			transform.position += GIRTH *
 				(collision.transform.position.x < transform.position.x ? 1:-1);
-		}
-
-		if (collision.gameObject.tag.Equals(TAG_PLATFORM))
-		{
-			ContactPoint contact = collision.contacts[0];
-
-			_velocity.y = 0f;
-
-			// Landed
-			if (contact.normal.y > 0)
-			{
-				_jumps = _jumpConsecutive;
-				_platform = collision.collider;
-			}
-		}
-	}
-
-	private void OnCollisionExit(Collision collision)
-	{
-		if (collision.gameObject.tag.Equals(TAG_PLATFORM))
-		{
-			_platform = null;
 		}
 	}
 }
