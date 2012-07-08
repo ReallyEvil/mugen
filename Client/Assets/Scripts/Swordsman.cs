@@ -374,6 +374,7 @@ public class Swordsman: MonoBehaviour
 				Mathf.MoveTowards(_velocity.x, 0, _slashVelocityXZeroDelta);
 		}
 		else if (_dashTime < Time.time &&
+			_actionGestureTime != Single.MaxValue &&
 			_dashInputPeriod > Time.time - _actionGestureTime)
 		{
 			// Dashing cancels jumps
