@@ -393,7 +393,7 @@ public class Swordsman: MonoBehaviour
 			{
 				_dashTime = Time.time + _dashPeriodAir;
 				_velocity.x += _actionGesture[0].x > Screen.width/2 ?
-					_dashPeriodAir : -_dashPeriodAir;
+					_dashVelocityAir : -_dashVelocityAir;
 			}
 		}
 
