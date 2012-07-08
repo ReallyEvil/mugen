@@ -35,8 +35,10 @@ public class Swordsman: MonoBehaviour
 
 	public float _dashVelocityGround = 0.4f;
 	public float _dashPeriodGround = 1f;
-	public float _dashVelocityAir = 0.1f;
+	public float _dashVelocityAir = 0.5f;
 	public float _dashPeriodAir = 1f;
+	public float _dashDampening = 1f;
+	public float _dashStun = 1f;
 	public float _dashInvinciblePeriod = 0.5f;
 	public float _dashInputPeriod = 0.2f;
 	#endregion Editor Configurables
@@ -85,7 +87,9 @@ public class Swordsman: MonoBehaviour
 	private float _invincibleTime = Single.MinValue;
 
 	private float _dashTime = Single.MinValue;
-	private bool _isDashing = false;
+	private float _dashLerp = 1f;
+
+	public bool isDashing { get { return _dashLerp < 1f; } }
 
 	public bool isInvincible { get { return _invincibleTime > Time.time; } }
 	public bool isSlashing { get { return _slashTime > Time.time; } }
@@ -184,7 +188,7 @@ public class Swordsman: MonoBehaviour
 		Vector3 pos = transform.position;
 
 		// Penalty for dashing is the lack of input
-		if (_isDashing)
+		if (isDashing)
 		{
 			updateDashing();
 		}
@@ -207,7 +211,7 @@ public class Swordsman: MonoBehaviour
 		_velocity.x = Mathf.Clamp(_velocity.x, -_xVelocityMax, _xVelocityMax);
 
 		// Movement along the Y axis
-		if (pos.y > 0f && !_isDashing && !isSlashing)
+		if (pos.y > 0f && !isDashing && !isSlashing)
 		{
 			_velocity.y += _gravity;
 		}
@@ -227,10 +231,22 @@ public class Swordsman: MonoBehaviour
 
 	private void updateDashing()
 	{
-		if ( _dashTime < Time.time)
+		// Dashing broken up into two stages
+		// 1) Constant velocity
+		// 2) Deceleration
+		if (_dashTime < Time.time)
 		{
-			_isDashing = false;
-			_velocity.x = 0f;
+			_velocity.x = Mathf.Lerp(_velocity.x, 0, _dashLerp);
+
+			_dashLerp += Time.deltaTime * _dashDampening;
+
+			// Finished dashing 
+			if (_dashLerp >= 1f)
+			{
+				_dashTime = Time.time + _dashStun;
+				_dashLerp = 1f;
+				_velocity.x = 0f;
+			}
 		}
 	}
 
@@ -401,11 +417,6 @@ public class Swordsman: MonoBehaviour
 			_actionGestureTime != Single.MaxValue &&
 			_dashInputPeriod > Time.time - _actionGestureTime)
 		{
-			_isDashing = true;
-
-			// Dashing cancels jumps
-			_velocity.y = 0f;
-
 			// Only invincible when dashing along the ground
 			// Dashing has different parameters in the air
 			if (transform.position.y == 0f)
@@ -413,16 +424,23 @@ public class Swordsman: MonoBehaviour
 				invincible(_dashInvinciblePeriod);
 
 				_dashTime = Time.time + _dashPeriodGround;
+
 				_velocity.x = _actionGesture[0].x > Screen.width/2 ?
 					_dashVelocityGround : -_dashVelocityGround;
 			}
 			else
 			{
 				_dashTime = Time.time + _dashPeriodAir;
+
 				_velocity.x = _actionGesture[0].x > Screen.width/2 ?
 					_dashVelocityAir : -_dashVelocityAir;
 				_velocity.y = 0f;
 			}
+
+			// Dashing cancels jumps
+			_velocity.y = 0f;
+
+			_dashLerp = 0f;
 		}
 
 		_actionGestureTime = Time.time;
