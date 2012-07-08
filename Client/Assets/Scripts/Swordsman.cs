@@ -83,10 +83,11 @@ public class Swordsman: MonoBehaviour
 	private float _actionGestureTime = Single.MaxValue;
 
 	private float _invincibleTime = Single.MinValue;
+
 	private float _dashTime = Single.MinValue;
+	private bool _isDashing = false;
 
 	public bool isInvincible { get { return _invincibleTime > Time.time; } }
-	public bool isDashing { get { return _dashTime > Time.time; } }
 	public bool isSlashing { get { return _slashTime > Time.time; } }
 
 	private string _healthStr;
@@ -167,12 +168,6 @@ public class Swordsman: MonoBehaviour
 
 	private void Update()
 	{
-		// Penalty for dashing is the lack of input
-		if (!isDashing)
-		{
-			input();
-		}
-		
 		// Invincibility
 		if (!isInvincible && _arm.renderer.material != _normalMaterial)
 		{
@@ -188,66 +183,31 @@ public class Swordsman: MonoBehaviour
 
 		Vector3 pos = transform.position;
 
-		// Process x axis movement when on the ground
-		if (pos.y == 0f)
+		// Penalty for dashing is the lack of input
+		if (_isDashing)
 		{
-			if (_moveGesture.Count > 1)
-			{
-				float xVelocity =
-					(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
-					_xVelocityFactorGround;
-
-				// Ignore slower velocities in the same direction
-				if (_velocity.x == 0f ||
-					((_velocity.x > 0f && _velocity.x < xVelocity) ||
-					(_velocity.x < 0f && _velocity.x > xVelocity)))
-				{
-					_velocity.x = Mathf.MoveTowards(
-						_velocity.x, xVelocity, _xAccelerationMax);
-				}
-				// Decelerate when changing dir
-				else if (Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity))
-				{
-					_velocity.x += _velocity.x > 0f ?
-						-_frictionChangeDir : _frictionChangeDir;
-				}
-			}
-			// Decelerate if there is no input and on the ground
-			else if (_velocity.x != 0)
-			{
-				float sign = Mathf.Sign(_velocity.x);
-
-				_velocity.x += _velocity.x > 0f ? -_friction : _friction;
-
-				// Check sign to avoid flip floping around the equilibrium
-				if (_velocity.x != 0f && Mathf.Sign(_velocity.x) != sign)
-				{
-					_velocity.x = 0f;
-				}
-			}
+			updateDashing();
 		}
-		// Process x axis movement when in the air
-		else if (_moveGesture.Count > 1)
+		else
 		{
-			float xVelocity =
-				(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
-				_xVelocityFactorAir;
-
-			// Faster
-			if (_velocity.x == 0f ||
-				((_velocity.x > 0f && _velocity.x < xVelocity) ||
-				(_velocity.x < 0f && _velocity.x > xVelocity)) ||
-				Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity))
+			input();
+		
+			// Process x axis movement when on the ground
+			if (pos.y == 0f)
 			{
-				_velocity.x = Mathf.MoveTowards(
-					_velocity.x, xVelocity, _xAccelerationMax);
+				updateGround();
+			}
+			// Process x axis movement when in the air
+			else if (_moveGesture.Count > 1)
+			{
+				updateAir();
 			}
 		}
 
 		_velocity.x = Mathf.Clamp(_velocity.x, -_xVelocityMax, _xVelocityMax);
 
 		// Movement along the Y axis
-		if (pos.y > 0f && !isDashing && !isSlashing)
+		if (pos.y > 0f && !_isDashing && !isSlashing)
 		{
 			_velocity.y += _gravity;
 		}
@@ -263,6 +223,70 @@ public class Swordsman: MonoBehaviour
 		}
 
 		transform.position = pos;
+	}
+
+	private void updateDashing()
+	{
+		if ( _dashTime < Time.time)
+		{
+			_isDashing = false;
+			_velocity.x = 0f;
+		}
+	}
+
+	private void updateGround()
+	{
+		if (_moveGesture.Count > 1)
+		{
+			float xVelocity =
+				(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
+				_xVelocityFactorGround;
+
+			// Ignore slower velocities in the same direction
+			if (_velocity.x == 0f ||
+				((_velocity.x > 0f && _velocity.x < xVelocity) ||
+				(_velocity.x < 0f && _velocity.x > xVelocity)))
+			{
+				_velocity.x = Mathf.MoveTowards(
+					_velocity.x, xVelocity, _xAccelerationMax);
+			}
+			// Decelerate when changing dir
+			else if (Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity))
+			{
+				_velocity.x += _velocity.x > 0f ?
+					-_frictionChangeDir : _frictionChangeDir;
+			}
+		}
+		// Decelerate if there is no input and on the ground
+		else if (_velocity.x != 0)
+		{
+			float sign = Mathf.Sign(_velocity.x);
+
+			_velocity.x += _velocity.x > 0f ? -_friction : _friction;
+
+			// Check sign to avoid flip floping around the equilibrium
+			if (_velocity.x != 0f && Mathf.Sign(_velocity.x) != sign)
+			{
+				_velocity.x = 0f;
+			}
+		}
+	}
+
+	private void updateAir()
+	{
+		float xVelocity =
+			(_moveGesture[_moveGesture.Count-1] - _moveGesture[0]).x *
+			_xVelocityFactorAir;
+
+		// Faster
+		if (_velocity.x == 0f ||
+			((_velocity.x > 0f && _velocity.x < xVelocity) ||
+			(_velocity.x < 0f && _velocity.x > xVelocity)) ||
+			Mathf.Sign(_velocity.x) != Mathf.Sign(xVelocity))
+		{
+			_velocity.x = Mathf.MoveTowards(
+				_velocity.x, xVelocity, _xAccelerationMax);
+		}
 	}
 
 	private void input()
@@ -377,6 +401,8 @@ public class Swordsman: MonoBehaviour
 			_actionGestureTime != Single.MaxValue &&
 			_dashInputPeriod > Time.time - _actionGestureTime)
 		{
+			_isDashing = true;
+
 			// Dashing cancels jumps
 			_velocity.y = 0f;
 
