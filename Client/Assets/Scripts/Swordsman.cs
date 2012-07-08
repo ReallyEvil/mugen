@@ -387,14 +387,15 @@ public class Swordsman: MonoBehaviour
 				invincible(_dashInvinciblePeriod);
 
 				_dashTime = Time.time + _dashPeriodGround;
-				_velocity.x += _actionGesture[0].x > Screen.width/2 ?
+				_velocity.x = _actionGesture[0].x > Screen.width/2 ?
 					_dashVelocityGround : -_dashVelocityGround;
 			}
 			else
 			{
 				_dashTime = Time.time + _dashPeriodAir;
-				_velocity.x += _actionGesture[0].x > Screen.width/2 ?
+				_velocity.x = _actionGesture[0].x > Screen.width/2 ?
 					_dashVelocityAir : -_dashVelocityAir;
+				_velocity.y = 0f;
 			}
 		}
 
