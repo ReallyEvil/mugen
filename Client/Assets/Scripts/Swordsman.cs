@@ -23,7 +23,7 @@ public class Swordsman: MonoBehaviour
 	public float _xAccelerationMax = 0.02f;
 	public float _friction = 0.01f;
 	public float _frictionChangeDir = 0.02f;
-	public float _gravity = -0.007f;
+	public float _gravity = -0.003f;
 
 	public float _jumpAngleMin = 0.25f;
 	public float _jumpFactor = 0.0015f;
@@ -33,12 +33,12 @@ public class Swordsman: MonoBehaviour
 
 	public float _minActionGestureLen = 5f;
 
-	public float _dashVelocityGround = 0.4f;
-	public float _dashPeriodGround = 1f;
-	public float _dashVelocityAir = 0.5f;
-	public float _dashPeriodAir = 1f;
-	public float _dashDampening = 1f;
-	public float _dashStun = 1f;
+	public float _dashVelocityGround = 0.3f;
+	public float _dashPeriodGround = 0.5f;
+	public float _dashVelocityAir = 0.3f;
+	public float _dashPeriodAir = 0.4f;
+	public float _dashDampening = 5f;
+	public float _dashStun = 0.35f;
 	public float _dashInvinciblePeriod = 0.5f;
 	public float _dashInputPeriod = 0.2f;
 	#endregion Editor Configurables
