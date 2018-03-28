@@ -78,3 +78,4 @@
 /Client/Library/AssetVersioning.db
 /Client/UnityPackageManager
 *.db
+.DS_Store
