@@ -5,6 +5,8 @@
 using UnityEngine;
 using HutongGames.PlayMaker;
 
+using Tooltip = HutongGames.PlayMaker.TooltipAttribute;
+
 [ActionCategory(ActionCategory.Material)]
 [Tooltip("Get a material at index on a gameObject and store it in a variable")]
 public class GetMaterial : FsmStateAction

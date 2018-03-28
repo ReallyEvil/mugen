@@ -1,6 +1,8 @@
 using UnityEngine;
 using HutongGames.PlayMaker;
 
+using Tooltip = HutongGames.PlayMaker.TooltipAttribute;
+
 [ActionCategory(ActionCategory.Debug)]
 [Tooltip("Draw gizmos shape")]
 public class DebugDrawShape : FsmStateAction
