@@ -37,7 +37,7 @@ public class Sprite: MonoBehaviour
         GetComponent<MeshFilter>().mesh = _mesh;
 
         _uvs = new Vector2[_mesh.uv.Length];
-        _tex = renderer.sharedMaterial.mainTexture;
+        _tex = GetComponent<Renderer>().sharedMaterial.mainTexture;
     }
 
     private void Update()

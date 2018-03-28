@@ -66,7 +66,7 @@ namespace HutongGames.PlayMaker.Actions
 				vec *= -1;
 				RaycastHit hit;
 				Ray ray = new Ray( tPos, vec);
-				Collider collider = go.transform.collider;
+				Collider collider = go.transform.GetComponent<Collider>();
 				if (collider.Raycast ( ray, out hit, 100)) {
 					Hand01Obj.Value.transform.position = hit.point;
 					Hand01Obj.Value.transform.forward = hit.normal;
@@ -86,7 +86,7 @@ namespace HutongGames.PlayMaker.Actions
 				vec *= -1;
 				RaycastHit hit;
 				Ray ray = new Ray( tPos, vec);
-				Collider collider = go.transform.collider;
+				Collider collider = go.transform.GetComponent<Collider>();
 				if (collider.Raycast ( ray, out hit, 100)) {
 					Hand02Obj.Value.transform.position = hit.point;
 					Hand02Obj.Value.transform.forward = hit.normal;

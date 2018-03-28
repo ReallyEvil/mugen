@@ -152,7 +152,7 @@ public class Swordsman: MonoBehaviour
 		health = 100;
 		score = 0;
 
-		_normalMaterial = _arm.renderer.material;
+		_normalMaterial = _arm.GetComponent<Renderer>().material;
 		_invincibleMaterial = (Material)
 			GameObject.Instantiate(Resources.Load(INVINCIBLE_MAT));
 	}
@@ -167,22 +167,22 @@ public class Swordsman: MonoBehaviour
 	private void invincible(float period)
 	{
 		_invincibleTime = Time.time + period;
-		_arm.renderer.material = _invincibleMaterial;
+		_arm.GetComponent<Renderer>().material = _invincibleMaterial;
 	}
 
 	private void Update()
 	{
 		// Invincibility
-		if (!isInvincible && _arm.renderer.material != _normalMaterial)
+		if (!isInvincible && _arm.GetComponent<Renderer>().material != _normalMaterial)
 		{
-			_arm.renderer.material = _normalMaterial;
+			_arm.GetComponent<Renderer>().material = _normalMaterial;
 		}
 
 		// Stop sword slashing
 		if (_sword.active && !isSlashing)
 		{
 			_sword.active = false;
-			_sword.renderer.enabled = false;
+			_sword.GetComponent<Renderer>().enabled = false;
 		}
 
 		Vector3 pos = transform.position;
@@ -397,7 +397,7 @@ public class Swordsman: MonoBehaviour
 			_arm.transform.eulerAngles = new Vector3(0f, 0f, z);
 
 			_sword.active = true;
-			_sword.renderer.enabled = true;
+			_sword.GetComponent<Renderer>().enabled = true;
 			_slashTime = Time.time + _slashPeriod;
 
 			// Velocity effect y when falling

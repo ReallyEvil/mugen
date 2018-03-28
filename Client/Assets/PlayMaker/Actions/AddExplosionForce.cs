@@ -50,9 +50,9 @@ namespace HutongGames.PlayMaker.Actions
 			GameObject go = gameObject.OwnerOption == OwnerDefaultOption.UseOwner ? Owner : gameObject.GameObject.Value;
 			if (go == null) return;
 			if (center == null) return;
-			if (go.rigidbody == null) return;
+			if (go.GetComponent<Rigidbody>() == null) return;
 
-			go.rigidbody.AddExplosionForce(force.Value, center.Value, radius.Value, upwardsModifier.Value, forceMode);
+			go.GetComponent<Rigidbody>().AddExplosionForce(force.Value, center.Value, radius.Value, upwardsModifier.Value, forceMode);
 		}
 	}
 }

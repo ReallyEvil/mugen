@@ -32,8 +32,8 @@ public class Grunt: MonoBehaviour
 	{
 		_health = _maxHealth;
 
-		Vector3 screenMin = Camera.main.WorldToScreenPoint(renderer.bounds.min);
-		Vector3 screenMax = Camera.main.WorldToScreenPoint(renderer.bounds.max);
+		Vector3 screenMin = Camera.main.WorldToScreenPoint(GetComponent<Renderer>().bounds.min);
+		Vector3 screenMax = Camera.main.WorldToScreenPoint(GetComponent<Renderer>().bounds.max);
 		_maxHealthWidth = screenMax.x - screenMin.x;
 
 		_rectHealth = new Rect(0, HEALTH_Y, _maxHealthWidth, HEALTH_HEIGHT);

@@ -97,7 +97,7 @@ namespace HutongGames.PlayMaker.Actions
 
 #if !(UNITY_IPHONE || UNITY_ANDROID || UNITY_FLASH)
 
-				storeMovieTexture.Value = wwwObject.movie;
+				storeMovieTexture.Value = wwwObject.GetMovieTexture();
 #endif
 
 				errorString.Value = wwwObject.error;

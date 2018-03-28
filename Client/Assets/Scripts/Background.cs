@@ -20,7 +20,7 @@ public class Background: MonoBehaviour
 		_tile = (Instantiate(prefab) as GameObject).transform;
 		_nextTile = (Instantiate(prefab) as GameObject).transform;
 
-		float width = _tile.renderer.bounds.size.x;
+		float width = _tile.GetComponent<Renderer>().bounds.size.x;
 		_offsetLeft = new Vector3(-width, 0f, 0f);
 		_offsetRight = new Vector3(width, 0f, 0f);
 

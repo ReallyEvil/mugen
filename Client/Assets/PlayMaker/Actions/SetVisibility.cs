@@ -50,23 +50,23 @@ namespace HutongGames.PlayMaker.Actions
 				return;
 			}
 
-            if (go.renderer == null)
+            if (go.GetComponent<Renderer>() == null)
             {   LogError("Missing Renderer!");
                 return; 
             }
 
             // remember initial visibility
-            initialVisibility = go.renderer.isVisible;
+            initialVisibility = go.GetComponent<Renderer>().isVisible;
 
             // if 'toggle' is not set, simply sets visibility to new value
             if (toggle.Value == false) 
             {
-                go.renderer.enabled = visible.Value;
+                go.GetComponent<Renderer>().enabled = visible.Value;
                 return;
             }
 			
             // otherwise, toggles the visibility
-            go.renderer.enabled = !go.renderer.isVisible;
+            go.GetComponent<Renderer>().enabled = !go.GetComponent<Renderer>().isVisible;
 		}
 
         public override void OnExit()
@@ -81,9 +81,9 @@ namespace HutongGames.PlayMaker.Actions
         {
             // uses the FSM to get the target object and resets its visibility
             var go = Fsm.GetOwnerDefaultTarget(gameObject);
-            if (go != null && go.renderer != null)
+            if (go != null && go.GetComponent<Renderer>() != null)
             {
-            	go.renderer.enabled = initialVisibility;
+            	go.GetComponent<Renderer>().enabled = initialVisibility;
             }
         }
 

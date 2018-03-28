@@ -39,7 +39,7 @@ namespace HutongGames.PlayMaker.Actions
 				} 
 			}
 
-			Application.CaptureScreenshot(screenshotFullPath);
+			ScreenCapture.CaptureScreenshot(screenshotFullPath);
 			
 			Finish();
 		}

@@ -28,12 +28,12 @@ namespace HutongGames.PlayMaker.Actions
 		void DoRemoveRPCsFromViewID()
 		{
 			GameObject targetGo = Fsm.GetOwnerDefaultTarget(gameObject);
-			if (targetGo == null || targetGo.networkView == null)
+			if (targetGo == null || targetGo.GetComponent<NetworkView>() == null)
 			{
 				return;
 			}
 			
-			Network.RemoveRPCs(targetGo.networkView.viewID);
+			Network.RemoveRPCs(targetGo.GetComponent<NetworkView>().viewID);
 		}
 		
 	}

@@ -30,9 +30,9 @@ namespace HutongGames.PlayMaker.Actions
 				return;
 			}
 
-			oldCamera = Camera.mainCamera;
+			oldCamera = Camera.main;
 
-			SwitchCamera(Camera.mainCamera, camera);
+			SwitchCamera(Camera.main, camera);
 
 			if (makeMainCamera)
 				camera.tag = "MainCamera";
