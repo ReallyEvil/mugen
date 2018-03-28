@@ -55,6 +55,7 @@
 /Client/Library/ProjectSettings.asset
 /Client/Library/ScriptMapper
 /Client/Temp
+/Client/Library
 /Client/Library/metadata
 /Client/Library/previews
 /Client/Library/ScriptAssemblies
@@ -75,4 +76,5 @@
 /Client/Library/ScriptMapper
 /Client/Library/cache
 /Client/Library/AssetVersioning.db
+/Client/UnityPackageManager
 *.db
