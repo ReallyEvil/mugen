@@ -34,8 +34,11 @@ public class Tutorial: MonoBehaviour
 
 	private void Update()
 	{
-		if (Application.platform == RuntimePlatform.Android ||
-			Application.platform == RuntimePlatform.IPhonePlayer)
+        bool isTouchScreen =
+			Application.platform == RuntimePlatform.Android ||
+			Application.platform == RuntimePlatform.IPhonePlayer;
+
+		if (isTouchScreen)
 		{
 			if (Input.touchCount == 0)
 			{
@@ -52,8 +55,15 @@ public class Tutorial: MonoBehaviour
 			{
 				onSwipe(touch.position.x > _startPos.x);
 			}
+
+			return;
 		}
-		else if (Application.platform == RuntimePlatform.WindowsEditor)
+
+		bool isEditor =
+			Application.platform == RuntimePlatform.WindowsEditor ||
+            Application.platform == RuntimePlatform.OSXEditor;
+
+		if (isEditor)
 		{
 			if (Input.GetMouseButtonDown(0))
 			{

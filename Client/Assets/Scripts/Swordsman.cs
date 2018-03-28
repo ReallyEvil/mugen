@@ -307,8 +307,11 @@ public class Swordsman: MonoBehaviour
 
 	private void input()
 	{
-		if (Application.platform == RuntimePlatform.Android ||
-			Application.platform == RuntimePlatform.IPhonePlayer)
+        bool isTouchScreen =
+			Application.platform == RuntimePlatform.Android ||
+			Application.platform == RuntimePlatform.IPhonePlayer;
+
+		if (isTouchScreen)
 		{
 			if (Input.touchCount > 0)
 			{
@@ -322,8 +325,15 @@ public class Swordsman: MonoBehaviour
 			{
 				onActionGesture();
 			}
+
+			return;
 		}
-		else if (Application.platform == RuntimePlatform.WindowsEditor)
+
+		bool isEditor =
+			Application.platform == RuntimePlatform.WindowsEditor ||
+			Application.platform == RuntimePlatform.OSXEditor;
+
+		if (isEditor)
 		{
 			if (Input.GetMouseButton(GESTURE_MOUSE_BUTTON))
 			{
